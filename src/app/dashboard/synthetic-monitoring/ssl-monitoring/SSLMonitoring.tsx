@@ -7,10 +7,18 @@ import MonitorTable from './MonitorTable'
 import DataNotFound from '@/components/data-not-found/DataNotFound'
 import { Modal } from '@/components/ui/modal'
 import SSLMonitorForm from './SSLMonitorForm';
+import { useGetMetricsQuery } from '@/services/api';
 
 
 const SSLMonitoring = () => {
     const [ isOpen, setIsOpen ] = useState( false );
+
+    const { data, error, isLoading, isFetching } = useGetMetricsQuery();
+
+    if ( isLoading ) return <p>Loading metrics...</p>;
+    if ( error ) return <p>Error fetching metrics</p>;
+
+    console.log(data, isFetching)
     return (
         <div>
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">

@@ -1,12 +1,10 @@
 import { Outfit } from 'next/font/google';
 import './globals.css';
-
-import { SidebarProvider } from '@/context/SidebarContext';
-import { ThemeProvider } from '@/context/ThemeContext';
 import { Metadata } from 'next';
+import { Providers } from './Providers';
 
-const outfit = Outfit({
-  subsets: ["latin"],
+const outfit = Outfit( {
+  subsets: [ "latin" ],
 } );
 
 export const metadata: Metadata = {
@@ -15,17 +13,15 @@ export const metadata: Metadata = {
   description: "Monitor, optimize, and scale your applications with SilverHawk. Gain real-time insights into system performance, track metrics, detect anomalies, and ensure smooth application operations with our robust APM solution.",
 };
 
-export default function RootLayout({
+export default function RootLayout( {
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}> ) {
   return (
     <html lang="en">
-      <body className={`${outfit.className} dark:bg-gray-900`}>
-        <ThemeProvider>
-          <SidebarProvider>{children}</SidebarProvider>
-        </ThemeProvider>
+      <body className={ `${outfit.className} dark:bg-gray-900` }>
+        <Providers>{ children }</Providers>
       </body>
     </html>
   );

@@ -20,7 +20,7 @@ export default function SSLMonitorForm() {
     };
 
     return (
-        <div className="p-6 w-full">
+        <div className="p-2 w-full">
             <h2 className="text-xl font-semibold mb-4">Add SSL Certificate Check</h2>
             <form className="space-y-4" onSubmit={ handleSubmit }>
                 {/* Monitor Name */ }
