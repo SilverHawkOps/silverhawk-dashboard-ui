@@ -3,10 +3,17 @@ import './globals.css';
 
 import { SidebarProvider } from '@/context/SidebarContext';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { Metadata } from 'next';
 
 const outfit = Outfit({
   subsets: ["latin"],
-});
+} );
+
+export const metadata: Metadata = {
+  title:
+    "SilverHawk – Advanced Application Performance Monitoring",
+  description: "Monitor, optimize, and scale your applications with SilverHawk. Gain real-time insights into system performance, track metrics, detect anomalies, and ensure smooth application operations with our robust APM solution.",
+};
 
 export default function RootLayout({
   children,
