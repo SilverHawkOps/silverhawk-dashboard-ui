@@ -19,7 +19,7 @@ export default function SignInForm() {
     password: ""
   } );
 
-  const onChangeFormInput = ( key: string, value ) => {
+  const onChangeFormInput = ( key: string, value:string ) => {
     if ( !key ) return;
 
     setFormData( prev => ( {
@@ -28,7 +28,7 @@ export default function SignInForm() {
     } ) );
   };
 
-  const handleSignInSubmit = ( e ) => {
+  const handleSignInSubmit = ( e: React.MouseEvent<HTMLButtonElement> ) => {
     e.preventDefault();
     console.log( formData );
 

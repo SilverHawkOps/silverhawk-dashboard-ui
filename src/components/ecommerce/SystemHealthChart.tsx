@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import dynamic from "next/dynamic";
+import { ApexOptions } from "apexcharts";
 
 const Chart = dynamic( () => import( "react-apexcharts" ), { ssr: false } );
 
@@ -11,7 +12,7 @@ export default function SystemHealthChart() {
         { name: "Requests", data: [ 240, 280, 300, 260, 320, 400, 380 ] },
     ];
 
-    const options = {
+    const options:ApexOptions = {
         chart: {
             type: "area",
             height: 300,
