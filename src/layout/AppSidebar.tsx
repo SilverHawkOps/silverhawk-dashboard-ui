@@ -17,7 +17,7 @@ import {
   TableIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
-import { ActivityIcon, BellIcon, CloudIcon, CpuIcon, DatabaseIcon, GitBranchIcon, HelpCircleIcon, LineChartIcon, PlugIcon, ServerIcon, SettingsIcon, ShieldCheckIcon, UserIcon } from "lucide-react";
+import { ActivityIcon, BellIcon, CloudIcon, CpuIcon, DatabaseIcon, GitBranchIcon, HelpCircleIcon, LineChartIcon, PlugIcon, ServerIcon, SettingsIcon, UserIcon } from "lucide-react";
 
 type NavItem = {
   name: string;
