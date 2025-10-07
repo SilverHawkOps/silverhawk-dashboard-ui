@@ -45,8 +45,8 @@ const navItems: NavItem[] = [
   },
   {
     icon: <ServerIcon />,
-    name: "Infrastructure",
-    path: "/infrastructure",
+    name: "Infrastructures",
+    path: "/dashboard/infrastructures",
   },
   {
     icon: <ServerIcon />,

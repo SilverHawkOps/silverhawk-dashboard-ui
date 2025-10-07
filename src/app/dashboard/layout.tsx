@@ -1,7 +1,7 @@
 "use client";
 
 import { useSidebar } from "@/context/SidebarContext";
-import { useAdminAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import AppHeader from "@/layout/AppHeader";
 import AppSidebar from "@/layout/AppSidebar";
 import Backdrop from "@/layout/Backdrop";
@@ -13,23 +13,23 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-  const { loading, isAdmin } = useAdminAuth();
+  const { loading, isUserLoggedIn } = useAuth();
 
   // Dynamic class for main content margin based on sidebar state
   const mainContentMargin = isMobileOpen
     ? "ml-0"
     : isExpanded || isHovered
-    ? "lg:ml-[290px]"
-    : "lg:ml-[90px]";
+      ? "lg:ml-[290px]"
+      : "lg:ml-[90px]";
 
-  if ( loading ) {
+  if (loading) {
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
 
-  if ( !isAdmin ) {
-    return null; // Or redirect handled in hook
+  if (!isUserLoggedIn) {
+    return null;
   }
-  
+
   return (
     <div className="min-h-screen xl:flex">
       {/* Sidebar and Backdrop */}

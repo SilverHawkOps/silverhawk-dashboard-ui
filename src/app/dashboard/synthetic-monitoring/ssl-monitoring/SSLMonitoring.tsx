@@ -4,21 +4,19 @@ import Button from '@/components/ui/button/Button'
 import { PlusIcon } from 'lucide-react'
 import React, { useState } from 'react'
 import MonitorTable from './MonitorTable'
-import DataNotFound from '@/components/data-not-found/DataNotFound'
 import { Modal } from '@/components/ui/modal'
 import SSLMonitorForm from './SSLMonitorForm';
-import { useGetMetricsQuery } from '@/services/api';
+import { useGetSSLMonitorsQuery } from '@/services/api';
 
 
 const SSLMonitoring = () => {
     const [ isOpen, setIsOpen ] = useState( false );
 
-    const { data, error, isLoading, isFetching } = useGetMetricsQuery();
+    const { data, error, isLoading } = useGetSSLMonitorsQuery();
 
     if ( isLoading ) return <p>Loading metrics...</p>;
     if ( error ) return <p>Error fetching metrics</p>;
 
-    console.log(data, isFetching)
     return (
         <div>
             <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
@@ -34,9 +32,7 @@ const SSLMonitoring = () => {
                 </div>
             </div>
 
-            <MonitorTable />
-
-            <DataNotFound />
+            <MonitorTable monitors={data.data.monitors} />
 
             <Modal isOpen={ isOpen } onClose={ () => setIsOpen(false) }>
                 <SSLMonitorForm />

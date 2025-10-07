@@ -1,28 +1,44 @@
 // hooks/useAuth.ts
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-export function useAdminAuth() {
-    const [ loading, setLoading ] = useState( true );
-    const [ isAdmin, setIsAdmin ] = useState( false );
-    const router = useRouter();
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
-    useEffect( () => {
-        const user = localStorage.getItem( "user" ); // Or fetch from context / API
-        if ( !user ) {
-            router.replace( "/login" ); // Redirect to login if not logged in
-            return;
-        }
+export function useAuth() {
+  const [loading, setLoading] = useState(true);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
-        const parsedUser = JSON.parse( user );
-        if ( !parsedUser?.role || parsedUser.role !== "admin" ) {
-            router.replace( "/login" ); // Or show "Unauthorized"
-            return;
-        }
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
 
-        setIsAdmin( true );
-        setLoading( false );
-    }, [ router ] );
+    if (!storedUser || !token) {
+      // store the attempted URL in localStorage for redirect after login
+      localStorage.setItem("redirectAfterLogin", pathname);
+      setLoading(false); // stop loading before redirect
+      router.replace("/signin"); // redirect to login
+      return;
+    }
 
-    return { loading, isAdmin };
+    try {
+      setUser(JSON.parse(storedUser));
+      setIsUserLoggedIn(true);
+    } catch (err) {
+      console.error("Failed to parse user from localStorage", err);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      router.replace("/signin");
+    } finally {
+      setLoading(false);
+    }
+  }, [router, pathname]);
+
+  return { loading, isUserLoggedIn, user };
 }
