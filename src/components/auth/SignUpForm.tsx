@@ -2,13 +2,34 @@
 import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
+import { ChevronLeftIcon } from "@/icons";
+import { useSendInviteLinkMutation } from "@/services/api";
 import Link from "next/link";
 import React, { useState } from "react";
 
 export default function SignUpForm() {
-  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
   const [isChecked, setIsChecked] = useState(false);
+  const [sendMagicLink, { isLoading, isSuccess, error }] =
+    useSendInviteLinkMutation();
+
+    console.log(isLoading, isSuccess, error);
+
+   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res = await sendMagicLink({ email }).unwrap();
+      if (res.success) {
+        alert("Check your email for the login link!");
+      } else {
+        alert(res.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong.");
+    }
+  };
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
       <div className="w-full max-w-md sm:pt-10 mx-auto mb-5">
@@ -83,10 +104,9 @@ export default function SignUpForm() {
                 </span>
               </div>
             </div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="space-y-5">
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                  {/* <!-- First Name --> */}
+                {/* <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <div className="sm:col-span-1">
                     <Label>
                       First Name<span className="text-error-500">*</span>
@@ -98,7 +118,6 @@ export default function SignUpForm() {
                       placeholder="Enter your first name"
                     />
                   </div>
-                  {/* <!-- Last Name --> */}
                   <div className="sm:col-span-1">
                     <Label>
                       Last Name<span className="text-error-500">*</span>
@@ -110,7 +129,7 @@ export default function SignUpForm() {
                       placeholder="Enter your last name"
                     />
                   </div>
-                </div>
+                </div> */}
                 {/* <!-- Email --> */}
                 <div>
                   <Label>
@@ -121,30 +140,10 @@ export default function SignUpForm() {
                     id="email"
                     name="email"
                     placeholder="Enter your email"
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
-                {/* <!-- Password --> */}
-                <div>
-                  <Label>
-                    Password<span className="text-error-500">*</span>
-                  </Label>
-                  <div className="relative">
-                    <Input
-                      placeholder="Enter your password"
-                      type={showPassword ? "text" : "password"}
-                    />
-                    <span
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
-                    >
-                      {showPassword ? (
-                        <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
-                      ) : (
-                        <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
-                      )}
-                    </span>
-                  </div>
-                </div>
+                
                 {/* <!-- Checkbox --> */}
                 <div className="flex items-center gap-3">
                   <Checkbox

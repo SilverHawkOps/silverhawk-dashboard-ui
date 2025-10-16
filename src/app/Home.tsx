@@ -1,8 +1,9 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { Activity, AlertCircle, Bell, CheckIcon, ChevronDown, Cpu, CrossIcon, FileText, Plug, Server, Settings, User, Users, Zap, } from "lucide-react";
+import HeroSection from "@/components/home/HeroSection";
 
 export default function HomePage() {
     const features = [
@@ -197,11 +198,131 @@ export default function HomePage() {
         "/logos/slack.svg",
     ];
 
+    const [isOpen, setIsOpen] = useState(false);
+
+    const [data, setData] = useState({
+        quantity: 6917.73,
+        allocated: 0,
+        remaining: 6917.73,
+    });
+
+    const [prices, setPrices] = useState([]);
+
+    const openPriceModal = () => {
+        setIsOpen(true);
+
+        setPrices([
+            { quantity: data.quantity, price: "", total_cost: "" }
+        ]);
+
+        setData((prev) => ({
+            ...prev,
+            allocated: prev.quantity,
+            remaining: 0
+        }));
+    }
+
+
+    const addEntry = () => {
+        if (data.remaining <= 0) {
+            return;
+        }
+
+        // Add a new entry with quantity = current remaining
+        setPrices([
+            ...prices,
+            { quantity: data.remaining, price: "", total_cost: "" }
+        ]);
+
+        // Update remaining dynamically
+        setData((prev) => ({
+            ...prev,
+            remaining: 0 // will be 0 after adding full remaining
+        }));
+    };
+
+
+
+    // handleChange
+    const handleChange = (index: number, field: keyof PriceEntry, value) => {
+        const updatedPrices = [...prices];
+        updatedPrices[index][field] = value;
+
+        // Update total_cost if both fields are filled
+        if (updatedPrices[index].quantity !== "" && updatedPrices[index].price !== "") {
+            updatedPrices[index].total_cost = (Number(updatedPrices[index].quantity) * Number(updatedPrices[index].price)).toFixed(2);
+        } else {
+            updatedPrices[index].total_cost = "";
+        }
+
+        // Calculate total allocated ignoring invalid/blank entries
+        const totalAllocated = updatedPrices.reduce(
+            (acc, entry) => acc + (entry.quantity !== "" ? Number(entry.quantity) : 0),
+            0
+        );
+
+        // Calculate remaining (can be negative if over-allocated)
+        const newRemaining = data.quantity - totalAllocated;
+
+        setData(prev => ({
+            ...prev,
+            allocated: totalAllocated,
+            remaining: newRemaining, // can be negative temporarily
+        }));
+
+        setPrices(updatedPrices);
+    };
+
+
+    const deleteEntry = (index: number) => {
+        const updatedPrices = [...prices];
+        const deletedQuantity = updatedPrices[index].quantity !== "" ? Number(updatedPrices[index].quantity) : 0;
+
+        // Add the deleted quantity back to remaining
+        setData((prev) => ({
+            ...prev,
+            remaining: prev.remaining + deletedQuantity
+        }));
+
+        // Remove the entry
+        updatedPrices.splice(index, 1);
+        setPrices(updatedPrices);
+    };
+
+    const getErrorString = () => {
+        let allocationError;
+        let entryError;
+        if (data.remaining !== 0) {
+            allocationError = `Please allocate all ${data.quantity} SUI. ${data.remaining} remaining.`
+        }
+
+
+        const hasEmptyFields = prices.some(entry => entry.quantity === "" || entry.price === "");
+        if (hasEmptyFields) {
+            entryError = "All entries must have both quantity and price."
+        };
+
+
+        return {
+            allocationError, entryError
+        }
+    }
+
+    const errors = getErrorString();
+
+
+
+    const handleSave = () => {
+        console.log(prices)
+        alert("Saved successfully!");
+        setIsOpen(false);
+    };
+
     return (
         <>
-            <main className="bg-[#181c20] min-h-screen text-white font-sans">
-                {/* Navbar */ }
-                <header className="container mx-auto flex justify-between items-center py-6 px-4 bg-[#181c20]">
+            <main className="bg-[#0f1620] min-h-screen text-white font-sans">
+                {/* Navbar */}
+                <header className="container mx-auto flex justify-between items-center py-6 px-4 bg-[#0f1620]">
                     <div className="flex items-center gap-2">
                         <span className="bg-white p-2 rounded-full text-blue-600 font-bold">SH</span>
                         <span className="text-xl font-bold">SilverHawk</span>
@@ -217,15 +338,15 @@ export default function HomePage() {
                     </nav>
 
                     <div className="flex items-center gap-4">
-                        <Link href={ '/signin' } className="text-sm hover:text-gray-200">Sign In</Link>
-                        <Link href={ '/signup' } className="text-white bg-blue-600 hover:bg-gray-100 px-4 py-2 text-sm font-medium">
+                        <Link href={'/signin'} className="text-sm hover:text-gray-200">Sign In</Link>
+                        <Link href={'/signup'} className="text-white bg-blue-600 hover:bg-gray-100 px-4 py-2 text-sm font-medium">
                             Sign Up
                         </Link>
                     </div>
                 </header>
 
-                {/* Hero Section */ }
-                <section className="text-center py-24 px-6">
+                {/* Hero Section */}
+                {/* <section className="text-center py-24 px-6">
                     <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4">
                         Monitor, Optimize, and Scale <br />
                         Your Applications with Confidence
@@ -240,7 +361,7 @@ export default function HomePage() {
                         <button className="bg-white text-blue-600 hover:bg-gray-100 font-medium px-6 py-3 rounded-md">
                             Start Free Trial
                         </button>
-                        <Link href={ '/dashboard' } className="bg-blue-700 hover:bg-blue-800 font-medium px-6 py-3 rounded-md">
+                        <Link href={'/dashboard'} className="bg-blue-700 hover:bg-blue-800 font-medium px-6 py-3 rounded-md">
                             🚀 View Live Demo
                         </Link>
                     </div>
@@ -249,13 +370,15 @@ export default function HomePage() {
                         <Image
                             src="/images/banner.png"
                             alt="SilverHawk Dashboard Preview"
-                            width={ 900 }
-                            height={ 500 }
+                            width={900}
+                            height={500}
                             className="mx-auto rounded-2xl shadow-lg"
                         />
                     </div>
-                </section>
+                </section> */}
+            <HeroSection />
             </main>
+
 
 
             <section className="py-20 bg-gray-50 text-center relative overflow-hidden">
@@ -270,16 +393,16 @@ export default function HomePage() {
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                        { features.map( ( feature, index ) => (
+                        {features.map((feature, index) => (
                             <div
-                                key={ index }
-                                className="flex flex-col items-center bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2"
+                                key={index}
+                                className="flex flex-col items-center bg-white p-6 rounded-2xl shadow-md transition transform hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] "
                             >
                                 <div className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl p-4 mb-6 flex items-center justify-center">
-                                    { feature.icon }
+                                    {feature.icon}
                                 </div>
-                                <h3 className="font-bold text-lg mb-2">{ feature.title }</h3>
-                                <p className="text-gray-600 text-sm mb-4 max-w-xs">{ feature.desc }</p>
+                                <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
+                                <p className="text-gray-600 text-sm mb-4 max-w-xs">{feature.desc}</p>
                                 <a
                                     href="#"
                                     className="text-blue-600 font-semibold text-sm hover:underline hover:text-blue-700 transition"
@@ -287,11 +410,11 @@ export default function HomePage() {
                                     Learn More
                                 </a>
                             </div>
-                        ) ) }
+                        ))}
                     </div>
                 </div>
 
-                {/* Optional abstract shapes */ }
+                {/* Optional abstract shapes */}
                 <div className="absolute top-0 -left-32 w-96 h-96 bg-blue-200 opacity-10 rounded-full mix-blend-multiply animate-pulse"></div>
                 <div className="absolute bottom-0 -right-32 w-96 h-96 bg-purple-200 opacity-10 rounded-full mix-blend-multiply animate-pulse"></div>
             </section>
@@ -306,29 +429,29 @@ export default function HomePage() {
                         Follow three simple steps to monitor, analyze, and optimize your applications.
                     </p>
 
-                    {/* Horizontal timeline for desktop, stacked for mobile */ }
+                    {/* Horizontal timeline for desktop, stacked for mobile */}
                     <div className="flex flex-col md:flex-row justify-center items-start gap-12 relative">
-                        { steps.map( ( step, index ) => (
+                        {steps.map((step, index) => (
                             <div
-                                key={ index }
+                                key={index}
                                 className="flex-1 bg-gray-800 rounded-2xl p-8 shadow-md w-full hover:shadow-xl transition transform hover:-translate-y-2 relative"
                             >
-                                {/* Step number circle */ }
+                                {/* Step number circle */}
                                 <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold">
-                                    { index + 1 }
+                                    {index + 1}
                                 </div>
-                                {/* Icon */ }
+                                {/* Icon */}
                                 <div className="bg-blue-600 text-white rounded-2xl p-4 mb-6 inline-block">
-                                    { step.icon }
+                                    {step.icon}
                                 </div>
-                                <h3 className="font-bold text-xl mb-2 text-white">{ step.title }</h3>
-                                <p className="text-gray-300">{ step.desc }</p>
+                                <h3 className="font-bold text-xl mb-2 text-white">{step.title}</h3>
+                                <p className="text-gray-300">{step.desc}</p>
                             </div>
-                        ) ) }
+                        ))}
                     </div>
                 </div>
 
-                {/* Decorative shapes */ }
+                {/* Decorative shapes */}
                 <div className="absolute top-0 -left-32 w-96 h-96 bg-blue-600 opacity-20 rounded-full mix-blend-multiply animate-pulse"></div>
                 <div className="absolute bottom-0 -right-32 w-96 h-96 bg-purple-600 opacity-20 rounded-full mix-blend-multiply animate-pulse"></div>
             </section>
@@ -363,50 +486,50 @@ export default function HomePage() {
                         Transparent pricing with everything you need to monitor and optimize your applications.
                     </p>
 
-                    {/* Tiered Cards */ }
+                    {/* Tiered Cards */}
                     <div className="flex flex-col md:flex-row justify-center gap-8 mb-16">
-                        { plans.map( ( plan ) => (
+                        {plans.map((plan) => (
                             <div
-                                key={ plan.name }
-                                className={ `flex-1 p-8 rounded-2xl border transition-transform duration-300 ${plan.recommended
+                                key={plan.name}
+                                className={`flex-1 p-8 rounded-2xl border transition-transform duration-300 ${plan.recommended
                                     ? "bg-white shadow-2xl border-blue-500 md:scale-105 relative"
                                     : "bg-white border-gray-200"
-                                    }` }
+                                    }`}
                             >
-                                { plan.recommended && (
+                                {plan.recommended && (
                                     <span className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">
                                         Most Popular
                                     </span>
-                                ) }
+                                )}
 
-                                <h3 className="text-xl font-semibold mb-4">{ plan.name }</h3>
-                                <p className="text-4xl font-bold mb-6">{ plan.price }/mo</p>
+                                <h3 className="text-xl font-semibold mb-4">{plan.name}</h3>
+                                <p className="text-4xl font-bold mb-6">{plan.price}/mo</p>
 
                                 <ul className="mb-6 space-y-3 text-left">
-                                    { plan.features.map( ( feature, i ) => (
-                                        <li key={ i } className="flex items-center gap-2">
-                                            { feature.included ? (
+                                    {plan.features.map((feature, i) => (
+                                        <li key={i} className="flex items-center gap-2">
+                                            {feature.included ? (
                                                 <CheckIcon className="w-5 h-5 text-green-500" />
                                             ) : (
                                                 <CrossIcon className="w-5 h-5 text-red-400" />
-                                            ) }
+                                            )}
                                             <span className="text-gray-700">
-                                                { feature.name }: <strong>{ feature.value }</strong>
+                                                {feature.name}: <strong>{feature.value}</strong>
                                             </span>
                                         </li>
-                                    ) ) }
+                                    ))}
                                 </ul>
 
                                 <button
-                                    className={ `w-full font-semibold py-3 px-6 rounded-lg transition ${plan.recommended
+                                    className={`w-full font-semibold py-3 px-6 rounded-lg transition ${plan.recommended
                                         ? "bg-blue-600 text-white hover:bg-blue-700"
                                         : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                                        }` }
+                                        }`}
                                 >
-                                    { plan.cta }
+                                    {plan.cta}
                                 </button>
                             </div>
-                        ) ) }
+                        ))}
                     </div>
                 </div>
             </section>
@@ -421,51 +544,51 @@ export default function HomePage() {
                         See why developers and DevOps teams rely on SilverHawk to monitor and optimize their systems.
                     </p>
 
-                    {/* Testimonials Carousel / Grid */ }
+                    {/* Testimonials Carousel / Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                        { testimonials.map( ( t, index ) => (
+                        {testimonials.map((t, index) => (
                             <div
-                                key={ index }
+                                key={index}
                                 className="bg-gray-800 p-6 rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2"
                             >
                                 <div className="flex items-center mb-4">
-                                    { t.avatar ? (
+                                    {t.avatar ? (
                                         <Image
-                                            src={ t.avatar }
-                                            alt={ t.name }
-                                            width={ 12 } height={ 12 }
+                                            src={t.avatar}
+                                            alt={t.name}
+                                            width={12} height={12}
                                             className="w-12 h-12 rounded-full mr-4"
                                         />
                                     ) : (
                                         <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center mr-4">
                                             <User className="w-6 h-6 text-white" />
                                         </div>
-                                    ) }
+                                    )}
                                     <div className="text-left">
-                                        <p className="font-bold">{ t.name }</p>
-                                        <p className="text-gray-400 text-sm">{ `"` }{ t.role }{ `"` }</p>
+                                        <p className="font-bold">{t.name}</p>
+                                        <p className="text-gray-400 text-sm">{`"`}{t.role}{`"`}</p>
                                     </div>
                                 </div>
-                                <p className="text-gray-300 italic">{ `"` }{ t.quote }{ `"` }</p>
+                                <p className="text-gray-300 italic">{`"`}{t.quote}{`"`}</p>
                             </div>
-                        ) ) }
+                        ))}
                     </div>
 
-                    {/* Optional Company Logos / Trust Signals */ }
+                    {/* Optional Company Logos / Trust Signals */}
                     <div className="flex flex-wrap justify-center items-center gap-8">
-                        { companies.map( ( logo, index ) => (
+                        {companies.map((logo, index) => (
                             <Image
-                                key={ index }
-                                src={ logo }
-                                alt={ `Company ${index + 1}` }
-                                width={ 12 } height={ 12 }
+                                key={index}
+                                src={logo}
+                                alt={`Company ${index + 1}`}
+                                width={12} height={12}
                                 className="h-12 filter brightness-150 opacity-70 hover:opacity-100 transition"
                             />
-                        ) ) }
+                        ))}
                     </div>
                 </div>
 
-                {/* Decorative shapes */ }
+                {/* Decorative shapes */}
                 <div className="absolute top-0 -left-32 w-96 h-96 bg-blue-600 opacity-20 rounded-full mix-blend-multiply animate-pulse"></div>
                 <div className="absolute bottom-0 -right-32 w-96 h-96 bg-purple-600 opacity-20 rounded-full mix-blend-multiply animate-pulse"></div>
             </section>
@@ -476,29 +599,29 @@ export default function HomePage() {
                         Frequently Asked Questions
                     </h2>
                     <div className="space-y-6">
-                        { faqs.map( ( faq, index ) => (
+                        {faqs.map((faq, index) => (
                             <details
-                                key={ index }
+                                key={index}
                                 className="group bg-white rounded-2xl p-6 shadow-sm border border-gray-200 transition hover:shadow-md"
                             >
                                 <summary className="flex justify-between items-center cursor-pointer text-lg font-medium">
-                                    { faq.question }
+                                    {faq.question}
                                     <ChevronDown className="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform duration-300" />
                                 </summary>
-                                <p className="mt-3 text-gray-600 leading-relaxed">{ faq.answer }</p>
+                                <p className="mt-3 text-gray-600 leading-relaxed">{faq.answer}</p>
                             </details>
-                        ) ) }
+                        ))}
                     </div>
                 </div>
 
-                {/* Optional abstract shapes */ }
+                {/* Optional abstract shapes */}
                 <div className="absolute top-0 -left-32 w-96 h-96 bg-blue-200 opacity-10 rounded-full mix-blend-multiply animate-pulse"></div>
                 <div className="absolute bottom-0 -right-32 w-96 h-96 bg-purple-200 opacity-10 rounded-full mix-blend-multiply animate-pulse"></div>
             </section>
 
             <footer className="bg-gray-900 text-gray-300 pt-16 pb-8">
                 <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
-                    {/* Brand Info */ }
+                    {/* Brand Info */}
                     <div>
                         <h3 className="text-2xl font-bold text-white mb-4">SilverHawk</h3>
                         <p className="text-gray-400 leading-relaxed mb-4">
@@ -520,7 +643,7 @@ export default function HomePage() {
                         </div>
                     </div>
 
-                    {/* Product */ }
+                    {/* Product */}
                     <div>
                         <h4 className="text-white font-semibold mb-4">Product</h4>
                         <ul className="space-y-3">
@@ -531,7 +654,7 @@ export default function HomePage() {
                         </ul>
                     </div>
 
-                    {/* Resources */ }
+                    {/* Resources */}
                     <div>
                         <h4 className="text-white font-semibold mb-4">Resources</h4>
                         <ul className="space-y-3">
@@ -542,7 +665,7 @@ export default function HomePage() {
                         </ul>
                     </div>
 
-                    {/* Company */ }
+                    {/* Company */}
                     <div>
                         <h4 className="text-white font-semibold mb-4">Company</h4>
                         <ul className="space-y-3">
@@ -554,10 +677,10 @@ export default function HomePage() {
                     </div>
                 </div>
 
-                {/* Bottom Line */ }
+                {/* Bottom Line */}
                 <div className="border-t border-gray-800 mt-12 pt-6 text-center text-gray-500 text-sm">
                     <p>
-                        © { new Date().getFullYear() } <span className="text-white font-semibold">SilverHawk</span>. All rights reserved.
+                        © {new Date().getFullYear()} <span className="text-white font-semibold">SilverHawk</span>. All rights reserved.
                     </p>
                 </div>
             </footer>

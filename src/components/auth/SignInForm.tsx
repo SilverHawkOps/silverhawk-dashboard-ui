@@ -4,36 +4,45 @@ import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
+import { useLoginMutation } from "@/services/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 export default function SignInForm() {
+
   const router = useRouter();
+  const [login, { isLoading, error }] = useLoginMutation();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [ isChecked, setIsChecked ] = useState( false );
-  
-  const [ formData, setFormData ] = useState( {
+  const [isChecked, setIsChecked] = useState(false);
+
+  const [formData, setFormData] = useState({
     email: "",
     password: ""
-  } );
+  });
 
-  const onChangeFormInput = ( key: string, value:string ) => {
-    if ( !key ) return;
+  const onChangeFormInput = (key: string, value: string) => {
+    if (!key) return;
 
-    setFormData( prev => ( {
+    setFormData(prev => ({
       ...prev,
-      [ key ]: value
-    } ) );
+      [key]: value
+    }));
   };
 
-  const handleSignInSubmit = ( e: React.MouseEvent<HTMLButtonElement> ) => {
+  const handleSignInSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log( formData );
-
-    localStorage.setItem( 'user', JSON.stringify( { email: formData.email, role: "admin", loggedIn: true } ) );
-    router.push( '/dashboard' );
+    try {
+      const res = await login({ email: formData.email, password: formData.password }).unwrap();
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      const redirectUrl = localStorage.getItem("redirectAfterLogin") || "/dashboard";
+      localStorage.removeItem("redirectAfterLogin"); // clean up
+      router.replace(redirectUrl);
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
   }
 
   return (
@@ -126,8 +135,8 @@ export default function SignInForm() {
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
-                      defaultValue={ formData.password }
-                      onChange={ ( e ) => onChangeFormInput( "password", e.target.value ) } 
+                      defaultValue={formData.password}
+                      onChange={(e) => onChangeFormInput("password", e.target.value)}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -156,10 +165,11 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button onClick={handleSignInSubmit} className="w-full" size="sm">
-                    Sign in
+                  <Button onClick={handleSignInSubmit} className="w-full" size="sm" disabled={isLoading}>
+                    {isLoading ? "Logging in..." : "Login"}
                   </Button>
                 </div>
+                {error && <p style={{ color: "red" }}>{error?.data?.message}</p>}
               </div>
             </form>
 
