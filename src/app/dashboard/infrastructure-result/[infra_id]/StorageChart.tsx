@@ -4,17 +4,22 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
 
-// Dynamically import ApexCharts to avoid SSR issues
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const CPUChart = ({ data }) => {
+const StorageChart = ({ data }) => {
   const labels = data.map((d) => d.timestamp);
-  const cpuLoad = data.map((d) => d.cpu.load);
+
+  // Compute storage metrics
+  const totalStorage = Number(data[0]?.disk?.[0]?.sizeGB || 0);
+  const usedStorage = data.map((d) => Number(d.disk?.[0]?.usedGB || 0));
+  const usedStoragePercent = data.map((d) =>
+    ((Number(d.disk?.[0]?.usedGB || 0) / totalStorage) * 100).toFixed(2)
+  );
 
   const series = [
     {
-      name: "CPU Load (%)",
-      data: cpuLoad,
+      name: "Used Storage (%)",
+      data: usedStoragePercent,
     },
   ];
 
@@ -22,29 +27,20 @@ const CPUChart = ({ data }) => {
     chart: {
       type: "line",
       height: 350,
-      toolbar: {
-        show: true,
-      },
-      zoom: {
-        enabled: true,
-      },
+      toolbar: { show: true },
+      zoom: { enabled: true },
     },
-    colors: ["#10b981"], // base color (greenish)
+    colors: ["#ffd670"],
     stroke: {
       curve: "smooth",
-      width: 3, // thicker stroke for better visibility
+      width: 3,
     },
-    fill: {
-      type: "gradient",
-      gradient: {
-        shadeIntensity: 1,
-        opacityFrom: 0.4,
-        opacityTo: 0,
-        stops: [0, 90, 100],
-      },
+    dataLabels: {
+      enabled: false,
     },
     markers: {
       size: 0,
+      hover: { size: 0 },
     },
     grid: {
       borderColor: "#e5e7eb",
@@ -66,33 +62,26 @@ const CPUChart = ({ data }) => {
       min: 0,
       max: 100,
       tickAmount: 5,
-      labels: {
-        style: { colors: "#6b7280" },
-      },
+      labels: { style: { colors: "#6b7280" } },
       title: {
         text: "CPU Load (%)",
         style: { color: "#374151", fontWeight: 600 },
       },
     },
-    responsive: [
-      {
-        breakpoint: 600,
-        options: {
-          chart: { height: 250 },
-          xaxis: { labels: { show: false } },
-        },
-      },
-    ],
+    tooltip: {
+      enabled: true,
+      x: { show: true },
+    },
   };
 
   return (
     <div className="p-4 bg-white dark:bg-gray-900 rounded-2xl shadow-md">
       <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-100 mb-2">
-        CPU Load Over Time
+        Storage Usage Over Time
       </h2>
       <Chart options={options} series={series} type="area" height={350} />
     </div>
   );
 };
 
-export default CPUChart;
+export default StorageChart;

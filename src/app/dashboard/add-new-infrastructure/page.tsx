@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { ClipboardCopyIcon, CheckCircleIcon } from "lucide-react";
 import Button from "@/components/ui/button/Button";
+import { useAddInfraMutation } from "@/services/api";
+import { AddInfraRequest } from "@/services/types";
 
 const osOptions = [
   { id: "linux", label: "Linux", icon: "🐧", note: "Recommended for most servers" },
@@ -44,17 +46,45 @@ const StepCard: React.FC<{
 );
 
 const InfrastructureModal: React.FC = () => {
-  const [infraName, setInfraName] = useState("");
   const [selectedOs, setSelectedOs] = useState<string | null>(null);
   const [apiKey, setApiKey] = useState("");
   const [pingStatus, setPingStatus] = useState("Not checked");
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [formData, setFormData] = useState<AddInfraRequest>({
+    name: "",
+    description: "",
+    tags: [],
+    environment: "testing"
+  });
 
-  const handleGenerateApiKey = () => {
-    if (!infraName || !selectedOs) return alert("Enter infra name and select OS");
+  const [addInfra, {isLoading, error}] = useAddInfraMutation();
+  console.log(isLoading, error);
+
+  const onChangeFormData = (field: string, value: string) => {
+    if (!field) return;
+
+    if (field === "tags") {
+      const newTags = value.split(",").map((tag) => tag.trim());
+      setFormData({ ...formData, tags: newTags });
+      return;
+    }
+
+    setFormData({ ...formData, [field]: value });
+  }
+
+
+  const handleGenerateApiKey = async () => {
     const key = `API-${Math.random().toString(36).slice(2, 12)}`;
+
+    const res = await addInfra(formData);
+
+    console.log(res);
+
+    return;
     setApiKey(key);
     setCompletedSteps([1]);
+    setCurrentStep(2);
   };
 
   const markStepCompleted = (step: number) => {
@@ -62,48 +92,96 @@ const InfrastructureModal: React.FC = () => {
   };
 
   return (
-    <div className="w-full mx-auto p-6 space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+    <div className="w-full h-screen mx-auto p-6 space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
       <h2 className="text-2xl font-bold text-gray-800 dark:text-white/90 mb-2">Add New Infrastructure</h2>
       <p className="text-gray-600 dark:text-gray-400 mb-4">
         Monitor your servers in real-time. The SilverHawk agent collects CPU, memory, disk metrics, and sends them to your dashboard.
       </p>
 
       {/* Step 1 */}
-      <StepCard
+      {currentStep === 1 && <StepCard
         step={1}
         title="Name & OS"
         description="Provide a name and select the operating system for your infrastructure."
         isCompleted={completedSteps.includes(1)}
       >
         <div className="flex flex-col gap-4">
-          <input
-            type="text"
-            placeholder="Infrastructure Name"
-            value={infraName}
-            onChange={(e) => setInfraName(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {osOptions.map((os) => (
-              <div
-                key={os.id}
-                onClick={() => setSelectedOs(os.id)}
-                className={`cursor-pointer border rounded-lg p-4 flex flex-col items-center transition ${selectedOs === os.id ? "border-blue-500 bg-blue-50 dark:bg-gray-700" : "border-gray-300 hover:border-blue-400"}`}
-              >
-                <div className="text-4xl mb-1">{os.icon}</div>
-                <div className="text-lg font-medium text-gray-700 dark:text-gray-200">{os.label}</div>
-                <p className="text-xs text-gray-500 mt-1">{os.note}</p>
-              </div>
-            ))}
+          <div className="mb-1">
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Name</label>
+            <input
+              type="text"
+              placeholder="Infrastructure Name"
+              value={formData.name}
+              onChange={(e) => onChangeFormData("name", e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              required
+            />
+          </div>
+
+          <div className="mb-1">
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Description</label>
+            <input
+              type="text"
+              placeholder="Infrastructure description"
+              value={formData.description}
+              onChange={(e) => onChangeFormData("description", e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              required
+            />
+
+          </div>
+          <div className="mb-1">
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Tags</label>
+            <input
+              type="text"
+              placeholder="Tags"
+              value={formData.tags.join(", ")}
+              onChange={(e) => onChangeFormData("tags", e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              required
+            />
+          </div>
+
+          <div className="mb-1">
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Environment</label>
+            <select
+              value={formData.environment}
+              onChange={(e) => onChangeFormData("environment", e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              required
+            >
+              <option value="production">Production</option>
+              <option value="staging">Staging</option>
+              <option value="development">Development</option>
+              <option value="testing">Testing</option>
+            </select>
+          </div>
+
+
+          <div className="mb-1">
+            <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">Select Your Operating System</label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {osOptions.map((os) => (
+                <div
+                  key={os.id}
+                  onClick={() => setSelectedOs(os.id)}
+                  className={`cursor-pointer border rounded-lg p-4 flex flex-col items-center transition ${selectedOs === os.id ? "border-blue-500 bg-blue-50 dark:bg-gray-700" : "border-gray-300 hover:border-blue-400"}`}
+                >
+                  <div className="text-4xl mb-1">{os.icon}</div>
+                  <div className="text-lg font-medium text-gray-700 dark:text-gray-200">{os.label}</div>
+                  <p className="text-xs text-gray-500 mt-1">{os.note}</p>
+                </div>
+              ))}
+            </div>
           </div>
           <Button size="sm" onClick={handleGenerateApiKey}>
             Generate API Key
           </Button>
         </div>
-      </StepCard>
+      </StepCard>}
 
       {/* Step 2 */}
-      <StepCard
+      {currentStep === 2 && <StepCard
         step={2}
         title="Install CLI"
         description="Open your terminal and run this command to install SilverHawk CLI."
@@ -111,10 +189,10 @@ const InfrastructureModal: React.FC = () => {
       >
         <TerminalBlock command="npm i -g silverhawk-infra" />
         {!completedSteps.includes(2) && <Button size="sm" onClick={() => markStepCompleted(2)}>Mark as Done</Button>}
-      </StepCard>
+      </StepCard>}
 
       {/* Step 3 */}
-      <StepCard
+      {currentStep === 3 && <StepCard
         step={3}
         title="Check Agent Connection"
         description="Verify the agent is installed and can communicate with the dashboard."
@@ -127,18 +205,18 @@ const InfrastructureModal: React.FC = () => {
             {pingStatus.includes("ready") && <Button size="sm" onClick={() => markStepCompleted(3)}>Mark as Done</Button>}
           </div>
         )}
-      </StepCard>
+      </StepCard>}
 
       {/* Step 4 */}
-      <StepCard
+      {currentStep === 4 && <StepCard
         step={4}
         title="Start Agent"
         description="Start the agent so it begins sending metrics to your dashboard."
         isCompleted={completedSteps.includes(4)}
       >
-        <TerminalBlock command={`silverhawk-infra start --api-key ${apiKey || "API_KEY_HERE"}`}  />
+        <TerminalBlock command={`silverhawk-infra start --api-key ${apiKey || "API_KEY_HERE"}`} />
         {!completedSteps.includes(4) && <Button size="sm" onClick={() => setCompletedSteps([1, 2, 3, 4])}>Finish Setup</Button>}
-      </StepCard>
+      </StepCard>}
     </div>
   );
 };
