@@ -12,7 +12,7 @@ import {
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
 import { ActivityIcon, BellIcon, CloudIcon, CpuIcon, DatabaseIcon, Flag, GitBranchIcon, HelpCircleIcon, LineChartIcon, PlugIcon, ServerIcon, SettingsIcon, UserIcon } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+// import { useAuth } from "@/hooks/useAuth";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
 
 type NavItem = {
@@ -150,7 +150,7 @@ const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
 
-  const { user } = useAuth();
+  // const { user = {role: ""} } = useAuth();
 
   const { loading, isFeatureEnabled } = useFeatureFlags();
 
@@ -161,7 +161,7 @@ const AppSidebar: React.FC = () => {
     menuType: "main" | "others"
   ) => (
     <ul className="flex flex-col gap-4">
-      {navItems.filter((nav) => !nav.roles || nav.roles.includes(user?.role)).map((nav, index) => {
+      {navItems.filter((nav) => !nav.roles || nav.roles.includes("user")).map((nav, index) => {
 
         // Skip item if flag is off
         if (nav.featureKey && !isFeatureEnabled(nav.featureKey)) return null;

@@ -45,23 +45,6 @@ export default function Dashboard() {
           <RecentAlerts />
         </div>
       </div>
-
-      {/* <div className="col-span-12 xl:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <MonthlySalesChart />
-        <MonthlyTarget />
-      </div>
-
-      <div className="col-span-12">
-        <StatisticsChart />
-      </div>
-
-      <div className="col-span-12 xl:col-span-5">
-        <DemographicCard />
-      </div>
-
-      <div className="col-span-12 xl:col-span-7">
-        <RecentOrders />
-      </div> */}
     </div>
   );
 }
