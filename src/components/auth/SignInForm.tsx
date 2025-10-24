@@ -169,7 +169,13 @@ export default function SignInForm() {
                     {isLoading ? "Logging in..." : "Login"}
                   </Button>
                 </div>
-                {error && <p style={{ color: "red" }}>{error?.data?.message}</p>}
+                {error && (
+                  <p style={{ color: "red" }}>
+                    {('data' in error && error.data)
+                      ? JSON.stringify(error.data)
+                      : 'An unexpected error occurred'}
+                  </p>
+                )}
               </div>
             </form>
 

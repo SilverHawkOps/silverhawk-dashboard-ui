@@ -1,11 +1,8 @@
-import InfraResult from './InfraResult';
+// import InfraResult from './InfraResult';
 
-interface Props {
-  params: { infra_id: string };
-}
-
-const InfraPage = ({ params }: Props) => {
-  return <InfraResult infraId={params.infra_id} />;
+const InfraPage = () => {
+  // return <InfraResult infraId={params.infra_id} />;
+  return <>Infra</>
 };
 
 export default InfraPage;

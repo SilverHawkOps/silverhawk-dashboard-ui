@@ -1,9 +1,12 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 import { Activity, AlertCircle, Bell, CheckIcon, ChevronDown, Cpu, CrossIcon, FileText, Plug, Server, Settings, User, Users, Zap, } from "lucide-react";
 import HeroSection from "@/components/home/HeroSection";
+
+import { motion } from "framer-motion";
+import { analytics } from "@/lib/analytics";
 
 export default function HomePage() {
     const features = [
@@ -198,185 +201,31 @@ export default function HomePage() {
         "/logos/slack.svg",
     ];
 
-    const [isOpen, setIsOpen] = useState(false);
-
-    const [data, setData] = useState({
-        quantity: 6917.73,
-        allocated: 0,
-        remaining: 6917.73,
-    });
-
-    const [prices, setPrices] = useState([]);
-
-    const openPriceModal = () => {
-        setIsOpen(true);
-
-        setPrices([
-            { quantity: data.quantity, price: "", total_cost: "" }
-        ]);
-
-        setData((prev) => ({
-            ...prev,
-            allocated: prev.quantity,
-            remaining: 0
-        }));
-    }
-
-
-    const addEntry = () => {
-        if (data.remaining <= 0) {
-            return;
-        }
-
-        // Add a new entry with quantity = current remaining
-        setPrices([
-            ...prices,
-            { quantity: data.remaining, price: "", total_cost: "" }
-        ]);
-
-        // Update remaining dynamically
-        setData((prev) => ({
-            ...prev,
-            remaining: 0 // will be 0 after adding full remaining
-        }));
-    };
-
-
-
-    // handleChange
-    const handleChange = (index: number, field: keyof PriceEntry, value) => {
-        const updatedPrices = [...prices];
-        updatedPrices[index][field] = value;
-
-        // Update total_cost if both fields are filled
-        if (updatedPrices[index].quantity !== "" && updatedPrices[index].price !== "") {
-            updatedPrices[index].total_cost = (Number(updatedPrices[index].quantity) * Number(updatedPrices[index].price)).toFixed(2);
-        } else {
-            updatedPrices[index].total_cost = "";
-        }
-
-        // Calculate total allocated ignoring invalid/blank entries
-        const totalAllocated = updatedPrices.reduce(
-            (acc, entry) => acc + (entry.quantity !== "" ? Number(entry.quantity) : 0),
-            0
-        );
-
-        // Calculate remaining (can be negative if over-allocated)
-        const newRemaining = data.quantity - totalAllocated;
-
-        setData(prev => ({
-            ...prev,
-            allocated: totalAllocated,
-            remaining: newRemaining, // can be negative temporarily
-        }));
-
-        setPrices(updatedPrices);
-    };
-
-
-    const deleteEntry = (index: number) => {
-        const updatedPrices = [...prices];
-        const deletedQuantity = updatedPrices[index].quantity !== "" ? Number(updatedPrices[index].quantity) : 0;
-
-        // Add the deleted quantity back to remaining
-        setData((prev) => ({
-            ...prev,
-            remaining: prev.remaining + deletedQuantity
-        }));
-
-        // Remove the entry
-        updatedPrices.splice(index, 1);
-        setPrices(updatedPrices);
-    };
-
-    const getErrorString = () => {
-        let allocationError;
-        let entryError;
-        if (data.remaining !== 0) {
-            allocationError = `Please allocate all ${data.quantity} SUI. ${data.remaining} remaining.`
-        }
-
-
-        const hasEmptyFields = prices.some(entry => entry.quantity === "" || entry.price === "");
-        if (hasEmptyFields) {
-            entryError = "All entries must have both quantity and price."
-        };
-
-
-        return {
-            allocationError, entryError
-        }
-    }
-
-    const errors = getErrorString();
-
-
-
-    const handleSave = () => {
-        console.log(prices)
-        alert("Saved successfully!");
-        setIsOpen(false);
-    };
-
     return (
         <>
             <main className="bg-[#0f1620] min-h-screen text-white font-sans">
-                {/* Navbar */}
-                <header className="container mx-auto flex justify-between items-center py-6 px-4 bg-[#0f1620]">
-                    <div className="flex items-center gap-2">
-                        <span className="bg-white p-2 rounded-full text-blue-600 font-bold">SH</span>
-                        <span className="text-xl font-bold">SilverHawk</span>
-                    </div>
-
-                    <nav className="hidden md:flex gap-8 text-sm font-medium">
-                        <a href="#" className="hover:text-gray-200">Home</a>
-                        <a href="#" className="hover:text-gray-200">Features</a>
-                        <a href="#" className="hover:text-gray-200">Pricing</a>
-                        <a href="#" className="hover:text-gray-200">Docs</a>
-                        <a href="#" className="hover:text-gray-200">Integrations</a>
-                        <a href="#" className="hover:text-gray-200">Blog</a>
-                    </nav>
-
-                    <div className="flex items-center gap-4">
-                        <Link href={'/signin'} className="text-sm hover:text-gray-200">Sign In</Link>
-                        <Link href={'/signup'} className="text-white bg-blue-600 hover:bg-gray-100 px-4 py-2 text-sm font-medium">
-                            Sign Up
-                        </Link>
+                <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-[#0f1620]/70 border-b border-white/10">
+                    <div className="container mx-auto flex justify-between items-center py-4 px-6">
+                        <div className="flex items-center gap-2">
+                            <span className="bg-gradient-to-r from-blue-500 to-cyan-400 p-2 rounded-full font-bold">SH</span>
+                            <span className="text-lg font-semibold tracking-wide text-white">SilverHawk</span>
+                        </div>
+                        <nav className="hidden md:flex gap-8 text-sm font-medium">
+                            <Link href="#features" className="hover:text-blue-400 transition">Features</Link>
+                            <Link href="#pricing" className="hover:text-blue-400 transition">Pricing</Link>
+                            <Link href="#workflow" className="hover:text-blue-400 transition">Docs</Link>
+                            <Link href="#contact" className="hover:text-blue-400 transition">Contact</Link>
+                        </nav>
+                        <div className="flex items-center gap-4">
+                            <Link href="/signin" className="text-sm hover:text-blue-400">Sign In</Link>
+                            <Link href="/signup" className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-5 py-2 rounded-md font-medium hover:scale-105 transition">
+                                Get Started
+                            </Link>
+                        </div>
                     </div>
                 </header>
 
-                {/* Hero Section */}
-                {/* <section className="text-center py-24 px-6">
-                    <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-4">
-                        Monitor, Optimize, and Scale <br />
-                        Your Applications with Confidence
-                    </h1>
-                    <p className="text-lg max-w-2xl mx-auto text-gray-100 mb-8">
-                        SilverHawk is a modern APM tool that gives you real-time visibility into
-                        your infrastructure, APIs, and services — helping you detect issues before
-                        they impact users.
-                    </p>
-
-                    <div className="flex justify-center gap-4 mb-12">
-                        <button className="bg-white text-blue-600 hover:bg-gray-100 font-medium px-6 py-3 rounded-md">
-                            Start Free Trial
-                        </button>
-                        <Link href={'/dashboard'} className="bg-blue-700 hover:bg-blue-800 font-medium px-6 py-3 rounded-md">
-                            🚀 View Live Demo
-                        </Link>
-                    </div>
-
-                    <div className="mt-16">
-                        <Image
-                            src="/images/banner.png"
-                            alt="SilverHawk Dashboard Preview"
-                            width={900}
-                            height={500}
-                            className="mx-auto rounded-2xl shadow-lg"
-                        />
-                    </div>
-                </section> */}
-            <HeroSection />
+                <HeroSection />
             </main>
 
 
@@ -394,22 +243,18 @@ export default function HomePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
                         {features.map((feature, index) => (
-                            <div
-                                key={index}
-                                className="flex flex-col items-center bg-white p-6 rounded-2xl shadow-md transition transform hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] "
+                            <motion.div key={index}
+                                whileHover={{ scale: 1.05 }}
+                                className="relative bg-gray-200 items-center border border-white/10 p-8 rounded-2xl hover:border-blue-500/50 transition"
                             >
-                                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl p-4 mb-6 flex items-center justify-center">
+                                <div className="bg-gradient-to-tr from-blue-500 to-cyan-400 text-white p-3 rounded-xl w-fit mb-4">
                                     {feature.icon}
                                 </div>
-                                <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
-                                <p className="text-gray-600 text-sm mb-4 max-w-xs">{feature.desc}</p>
-                                <a
-                                    href="#"
-                                    className="text-blue-600 font-semibold text-sm hover:underline hover:text-blue-700 transition"
-                                >
-                                    Learn More
-                                </a>
-                            </div>
+                                <h3 className="text-lg font-semibold text-black mb-2">{feature.title}</h3>
+                                <p className="text-black text-sm">
+                                    {feature.desc}
+                                </p>
+                            </motion.div>
                         ))}
                     </div>
                 </div>
@@ -434,13 +279,8 @@ export default function HomePage() {
                         {steps.map((step, index) => (
                             <div
                                 key={index}
-                                className="flex-1 bg-gray-800 rounded-2xl p-8 shadow-md w-full hover:shadow-xl transition transform hover:-translate-y-2 relative"
+                                className="flex-1 bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-2xl hover:border-blue-500/40 transition"
                             >
-                                {/* Step number circle */}
-                                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold">
-                                    {index + 1}
-                                </div>
-                                {/* Icon */}
                                 <div className="bg-blue-600 text-white rounded-2xl p-4 mb-6 inline-block">
                                     {step.icon}
                                 </div>
@@ -449,11 +289,11 @@ export default function HomePage() {
                             </div>
                         ))}
                     </div>
-                </div>
 
-                {/* Decorative shapes */}
-                <div className="absolute top-0 -left-32 w-96 h-96 bg-blue-600 opacity-20 rounded-full mix-blend-multiply animate-pulse"></div>
-                <div className="absolute bottom-0 -right-32 w-96 h-96 bg-purple-600 opacity-20 rounded-full mix-blend-multiply animate-pulse"></div>
+                    {/* Decorative shapes */}
+                    <div className="absolute top-0 -left-32 w-96 h-96 bg-blue-600 opacity-20 rounded-full mix-blend-multiply animate-pulse" ></div>
+                    <div className="absolute bottom-0 -right-32 w-96 h-96 bg-purple-600 opacity-20 rounded-full mix-blend-multiply animate-pulse"></div>
+                </div>
             </section>
 
             <section className="bg-gray-900 text-white py-20 text-center relative overflow-hidden">
@@ -466,10 +306,10 @@ export default function HomePage() {
                         optimize performance — all in one powerful APM platform.
                     </p>
                     <div className="flex justify-center gap-4">
-                        <button className="bg-white text-blue-700 hover:bg-gray-100 font-semibold px-8 py-3 rounded-md shadow-md transition">
+                        <button onClick={() => analytics.track("home_start_free_trial_btn", { type: "button", environment: "production" })} className="bg-white text-blue-700 hover:bg-gray-100 font-semibold px-8 py-3 rounded-md shadow-md transition">
                             Start Free Trial
                         </button>
-                        <button className="border border-white text-white hover:bg-white hover:text-blue-700 font-semibold px-8 py-3 rounded-md transition">
+                        <button onClick={() => analytics.track("home_schedule_a_demo_btn", { type: "button", environment: "production" })} className="border border-white text-white hover:bg-white hover:text-blue-700 font-semibold px-8 py-3 rounded-md transition">
                             Schedule a Demo
                         </button>
                     </div>

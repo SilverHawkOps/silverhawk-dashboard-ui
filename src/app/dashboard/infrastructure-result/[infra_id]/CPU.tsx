@@ -7,7 +7,19 @@ import { ApexOptions } from "apexcharts";
 // Dynamically import ApexCharts to avoid SSR issues
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const CPUChart = ({ data }) => {
+// ✅ Define the shape of each data point
+interface CPUDataPoint {
+  timestamp: string; // or number if it's a UNIX timestamp
+  cpu: {
+    load: number;
+  };
+}
+
+interface CPUChartProps {
+  data: CPUDataPoint[];
+}
+
+const CPUChart: React.FC<CPUChartProps> = ({ data }) => {
   const labels = data.map((d) => d.timestamp);
   const cpuLoad = data.map((d) => d.cpu.load);
 

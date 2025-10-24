@@ -26,7 +26,7 @@ export default function AdminLayout({
     return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
 
-  if (!isUserLoggedIn || user.role !== "admin") {
+  if (!isUserLoggedIn || user?.role !== "admin") {
     return null;
   }
 

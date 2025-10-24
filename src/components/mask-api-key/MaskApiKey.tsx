@@ -1,7 +1,7 @@
 "use client";
 
 import { ClipboardCopyIcon } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 
 interface MaskedKeyProps {
   token: string;

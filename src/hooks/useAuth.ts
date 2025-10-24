@@ -6,13 +6,13 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role?: string;
 }
 
 export function useAuth() {
   const [loading, setLoading] = useState(true);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User>();
   const router = useRouter();
   const pathname = usePathname();
 
