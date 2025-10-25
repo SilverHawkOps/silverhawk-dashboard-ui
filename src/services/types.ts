@@ -130,3 +130,21 @@ export interface InfraData {
   };
   metrics: MemoryMetric[];
 };
+
+export interface Infra {
+  _id: string;
+  name: string;
+  environment: string;
+  apiKey: string;
+  status: string;
+  os?: string;
+  hostname?: string;
+  cpuCores: number;
+  diskGB: number;
+  memoryGB: number;
+  lastHeartbeat?: string;
+  ipAddress?: string;
+  agentVersion?: string;
+  tags: string[];
+  id: number;
+}
