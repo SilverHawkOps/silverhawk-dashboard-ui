@@ -1,5 +1,6 @@
 import AcceptInviteForm from "@/components/auth/AcceptInviteForm";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Accept Invite | SilverHawk APM",
@@ -38,5 +39,9 @@ export const metadata: Metadata = {
   },
 };
 export default function AcceptInvite() {
-  return <AcceptInviteForm />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AcceptInviteForm />
+    </Suspense>
+  );
 }

@@ -1,6 +1,6 @@
 // src/services/api.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { } from "./types";
+import { Infra } from "./types";
 import {
   Metric, Alert, FeatureFlags, Flag, InfraData,
   LoginRequest,
@@ -39,7 +39,7 @@ export const api = createApi({
       providesTags: ["Alerts"],
     }),
 
-    getInfraList: builder.query<void, void>({
+    getInfraList: builder.query<Infra[], void>({
       query: () => "infra",
       providesTags: ["Infra"],
     }),
