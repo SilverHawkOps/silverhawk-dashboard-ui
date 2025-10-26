@@ -44,7 +44,7 @@ export const api = createApi({
       providesTags: ["Infra"],
     }),
 
-    getInfraMetrics: builder.query<InfraData, string>({
+    getInfraMetrics: builder.query<void, string>({
       query: (infraId) => `infra/${infraId}/metrics`,
     }),
 

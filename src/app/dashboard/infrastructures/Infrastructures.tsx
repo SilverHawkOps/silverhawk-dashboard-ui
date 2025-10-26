@@ -5,6 +5,7 @@ import Button from "@/components/ui/button/Button";
 import Link from "next/link";
 import { useGetInfraListQuery } from "@/services/api";
 import MaskedApiKey from "@/components/mask-api-key/MaskApiKey";
+import DataNotFound from "@/components/data-not-found/DataNotFound";
 
 
 const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
@@ -35,7 +36,6 @@ const Infrastructures = () => {
 
     if (isLoading) return <p>Loading metrics...</p>;
     if (error) return <p>Error fetching metrics</p>;
-    if (!data || data.length === 0) return <p>No infrastructures found</p>;
 
     return (
         <div className="bg-gray-50 dark:bg-gray-900">
@@ -70,7 +70,7 @@ const Infrastructures = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((infra) => (
+                        {data.length > 0 ? data.map((infra) => (
                             <tr key={infra._id} className="text-sm border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                 <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{infra.name}</td>
                                 <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{infra.environment}</td>
@@ -122,7 +122,9 @@ const Infrastructures = () => {
                                     </Button>
                                 </td>
                             </tr>
-                        ))}
+                        ) ) : (
+                                <DataNotFound />
+                        )}
                     </tbody>
                 </table>
             </div>

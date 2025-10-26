@@ -1,8 +1,8 @@
-// import InfraResult from './InfraResult';
+import InfraResult from './InfraResult';
 
-const InfraPage = () => {
-  // return <InfraResult infraId={params.infra_id} />;
-  return <>Infra</>
+const InfraPage = ({params}) => {
+  return <InfraResult infraId={params.infra_id} />;
+  // return <>Infra</>
 };
 
 export default InfraPage;

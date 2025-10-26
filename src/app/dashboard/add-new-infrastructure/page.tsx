@@ -4,6 +4,7 @@ import { ClipboardCopyIcon, CheckCircleIcon } from "lucide-react";
 import Button from "@/components/ui/button/Button";
 import { useAddInfraMutation } from "@/services/api";
 import { AddInfraRequest } from "@/services/types";
+import { useRouter } from "next/navigation";
 
 const osOptions = [
   { id: "linux", label: "Linux", icon: "🐧", note: "Recommended for most servers" },
@@ -18,7 +19,7 @@ const TerminalBlock: React.FC<{ command: string; }> = ({ command }) => {
   };
 
   return (
-    <div className="relative bg-gray-200 dark:bg-gray-800 text-black dark:text-white font-mono p-4 rounded-lg mb-2 shadow-md">
+    <div className="relative bg-gray-200 dark:bg-gray-800 text-sm text-black dark:text-white font-mono p-2 rounded-lg mb-2">
       <div className="flex justify-between items-center">
         <div className="break-all">{command}</div>
         <ClipboardCopyIcon className="h-5 w-5 cursor-pointer hover:text-white" onClick={() => copyToClipboard(command)} />
@@ -34,7 +35,7 @@ const StepCard: React.FC<{
   isCompleted: boolean;
   children: React.ReactNode;
 }> = ({ step, title, description, isCompleted, children }) => (
-  <div className={`p-4 border rounded-lg shadow-sm ${isCompleted ? "bg-green-50 border-green-400" : "bg-gray-50 border-gray-300"} transition-all`}>
+  <div className={ `p-4 border rounded-lg shadow-sm ${isCompleted ? "bg-green-50 border-green-400" : "bg-gray-50 border-gray-300"} transition-all`}>
     <div className="flex items-center justify-between mb-2">
       <h3 className="font-semibold text-gray-800 dark:text-white">
         Step {step}: {title} {isCompleted && <CheckCircleIcon className="inline-block h-5 w-5 text-green-600" />}
@@ -46,6 +47,9 @@ const StepCard: React.FC<{
 );
 
 const InfrastructureModal: React.FC = () => {
+
+  const router = useRouter();
+  
   const [selectedOs, setSelectedOs] = useState<string | null>(null);
   const [apiKey, setApiKey] = useState("");
   const [pingStatus, setPingStatus] = useState("Not checked");
@@ -77,11 +81,11 @@ const InfrastructureModal: React.FC = () => {
   const handleGenerateApiKey = async () => {
     const key = `API-${Math.random().toString(36).slice(2, 12)}`;
 
-    const res = await addInfra(formData);
+    // const res = await addInfra(formData);
 
-    console.log(res);
+    // console.log(res);
 
-    return;
+    // return;
     setApiKey(key);
     setCompletedSteps([1]);
     setCurrentStep(2);
@@ -92,18 +96,18 @@ const InfrastructureModal: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-screen mx-auto p-6 space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+    <div className="w-full mx-auto p-6 space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
       <h2 className="text-2xl font-bold text-gray-800 dark:text-white/90 mb-2">Add New Infrastructure</h2>
       <p className="text-gray-600 dark:text-gray-400 mb-4">
         Monitor your servers in real-time. The SilverHawk agent collects CPU, memory, disk metrics, and sends them to your dashboard.
       </p>
 
       {/* Step 1 */}
-      {currentStep === 1 && <StepCard
+      <StepCard
         step={1}
         title="Name & OS"
         description="Provide a name and select the operating system for your infrastructure."
-        isCompleted={completedSteps.includes(1)}
+        isCompleted={completedSteps.includes( 1 ) }
       >
         <div className="flex flex-col gap-4">
           <div className="mb-1">
@@ -178,21 +182,24 @@ const InfrastructureModal: React.FC = () => {
             Generate API Key
           </Button>
         </div>
-      </StepCard>}
+      </StepCard>
 
       {/* Step 2 */}
-      {currentStep === 2 && <StepCard
+      {apiKey && <StepCard
         step={2}
         title="Install CLI"
         description="Open your terminal and run this command to install SilverHawk CLI."
         isCompleted={completedSteps.includes(2)}
       >
         <TerminalBlock command="npm i -g silverhawk-infra" />
-        {!completedSteps.includes(2) && <Button size="sm" onClick={() => markStepCompleted(2)}>Mark as Done</Button>}
+        { !completedSteps.includes( 2 ) && <Button size="sm" onClick={ () => {
+          markStepCompleted( 2 )
+          setCurrentStep(3)
+        }}>Mark as Done</Button>}
       </StepCard>}
 
       {/* Step 3 */}
-      {currentStep === 3 && <StepCard
+      {apiKey && <StepCard
         step={3}
         title="Check Agent Connection"
         description="Verify the agent is installed and can communicate with the dashboard."
@@ -208,14 +215,14 @@ const InfrastructureModal: React.FC = () => {
       </StepCard>}
 
       {/* Step 4 */}
-      {currentStep === 4 && <StepCard
+      {apiKey && <StepCard
         step={4}
         title="Start Agent"
         description="Start the agent so it begins sending metrics to your dashboard."
         isCompleted={completedSteps.includes(4)}
       >
         <TerminalBlock command={`silverhawk-infra start --api-key ${apiKey || "API_KEY_HERE"}`} />
-        {!completedSteps.includes(4) && <Button size="sm" onClick={() => setCompletedSteps([1, 2, 3, 4])}>Finish Setup</Button>}
+        {!completedSteps.includes(4) && <Button size="sm" onClick={() => router.push("/dashboard/infrastructures")}>Finish Setup</Button>}
       </StepCard>}
     </div>
   );
