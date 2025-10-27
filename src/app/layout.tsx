@@ -44,6 +44,21 @@ export default function RootLayout( {
         strategy="afterInteractive"
         dangerouslySetInnerHTML={ { __html: JSON.stringify( jsonLd ) } }
       />
+      {/* ✅ Google Analytics Script */ }
+      <Script
+        async
+        src="https://www.googletagmanager.com/gtag/js?id=G-L4RLZVTN7Q" // <-- replace with your G-code
+        strategy="afterInteractive"
+      />
+
+      <Script id="google-analytics" strategy="afterInteractive">
+        { `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-L4RLZVTN7Q');
+          `}
+      </Script>
       <body className={ `${outfit.className} dark:bg-gray-900` }>
         <Providers>{ children }</Providers>
       </body>
