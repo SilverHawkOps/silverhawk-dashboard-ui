@@ -1,8 +1,14 @@
-// import InfraResult from './InfraResult';
+import InfraResult from "./InfraResult";
 
-const InfraPage = () => {
-  // return <InfraResult infraId={params.infra_id} />;
-  return <>Infra</>
+interface InfraPageProps {
+  params: Promise<{
+    infra_id: string;
+  }>;
+}
+
+const InfraPage = async ({ params }: InfraPageProps) => {
+  const { infra_id } = await params;
+  return <InfraResult infraId={infra_id} />;
 };
 
 export default InfraPage;

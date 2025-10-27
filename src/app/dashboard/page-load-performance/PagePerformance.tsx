@@ -1,31 +1,61 @@
-// "use client";
-// import React, { useState } from 'react'
-// import WebsiteCheckForm from './PagePerformanceCheckForm';
-// import PageLoadPerformanceResult from './PageLoadPerformanceResult';
+"use client";
 
-// const PagePerformance = () => {
+import React, { useState } from "react";
+import WebsiteCheckForm from "./PagePerformanceCheckForm";
+import PageLoadPerformanceResult from "./PageLoadPerformanceResult";
 
-//     const [performanceData, setPerformanceData] = useState(null);
-
-//     const onSubmit = (data) => {
-//         setPerformanceData(data);
-//     }
-//     return (
-//         <div>
-//             {!performanceData && <WebsiteCheckForm onSubmit={onSubmit} />}
-//             {performanceData && <PageLoadPerformanceResult performanceData={performanceData} />}
-//         </div>
-//     )
-// }
-
-// export default PagePerformance
-
-import React from 'react'
-
-const PagePerformance = () => {
-  return (
-    <div>PagePerformance</div>
-  )
+// Define the shape of performance data (you can adjust fields as per your actual API)
+interface Audit {
+  id?: string;
+  title: string;
+  description?: string;
+  displayValue?: string;
+  score: number | null;
+  category?: string;
+  details?: {
+    items?: Array<{
+      timing: number;
+      data: string; // base64 image
+    }>;
+  };
 }
 
-export default PagePerformance
+// Type for screenshot thumbnails audit
+interface ScreenshotThumbnailsAudit extends Audit {
+  details: {
+    items: {
+      timing: number;
+      data: string;
+    }[];
+  };
+}
+// Main performance data type
+interface PerformanceData {
+  requestedUrl: string;
+  fetchTime: string;
+  gatherMode: string;
+  audits: {
+    [key: string]: Audit | ScreenshotThumbnailsAudit;
+    "screenshot-thumbnails": ScreenshotThumbnailsAudit;
+  };
+}
+
+const PagePerformance: React.FC = () => {
+  const [ performanceData, setPerformanceData ] = useState<PerformanceData | null>( null );
+
+  const onSubmit = ( data: PerformanceData ) => {
+    setPerformanceData( data );
+  };
+
+  return (
+    <div>
+      { !performanceData ? (
+        <WebsiteCheckForm onSubmit={ onSubmit } />
+      ) : (
+        <PageLoadPerformanceResult performanceData={ performanceData } />
+      ) }
+    </div>
+  );
+};
+
+export default PagePerformance;

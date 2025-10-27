@@ -11,7 +11,7 @@ const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 interface CPUDataPoint {
   timestamp: string; // or number if it's a UNIX timestamp
   cpu: {
-    load: number;
+    load: {load: number}
   };
 }
 
@@ -21,7 +21,7 @@ interface CPUChartProps {
 
 const CPUChart: React.FC<CPUChartProps> = ({ data }) => {
   const labels = data.map((d) => d.timestamp);
-  const cpuLoad = data.map((d) => d.cpu.load);
+  const cpuLoad = data.map((d) => d.cpu.load.load);
 
   // ✅ Detect if any CPU load > 90
   const hasHighLoad = cpuLoad.some((val) => val > 90);
@@ -84,6 +84,25 @@ const CPUChart: React.FC<CPUChartProps> = ({ data }) => {
     tooltip: {
       enabled: true,
       x: { show: true },
+    },
+
+    annotations: {
+      yaxis: [
+        {
+          y: 80,
+          borderColor: "#f59e0b", // amber-500
+          strokeDashArray: 6,
+          label: {
+            borderColor: "#f59e0b",
+            style: {
+              color: "#fff",
+              background: "#f59e0b",
+              fontWeight: 600,
+            },
+            text: "80% Threshold",
+          },
+        },
+      ],
     },
   };
 

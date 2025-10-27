@@ -80,6 +80,43 @@ export interface GetPageLoadPerformanceByUrlRequest {
   url: string;
 }
 
+// types.ts or inside your api.ts file
+
+export interface Audit {
+  id?: string;
+  title: string;
+  description?: string;
+  displayValue?: string;
+  score: number | null;
+  category?: string;
+  details?: {
+    items?: Array<{
+      timing: number;
+      data: string; // base64 image
+    }>;
+  };
+}
+
+export interface ScreenshotThumbnailsAudit extends Audit {
+  details: {
+    items: {
+      timing: number;
+      data: string;
+    }[];
+  };
+}
+
+export interface PageLoadResponse {
+  requestedUrl: string;
+  fetchTime: string;
+  gatherMode: string;
+  audits: {
+    [key: string]: Audit | ScreenshotThumbnailsAudit;
+    "screenshot-thumbnails": ScreenshotThumbnailsAudit;
+  };
+}
+
+
 export interface Flag {
   _id: string;
   name: string;
@@ -131,20 +168,92 @@ export interface InfraData {
   metrics: MemoryMetric[];
 };
 
+export interface InfraMetrics {
+  cpuLoad: number;
+  memoryUsage: number;
+  diskUsage: number;
+  networkIn: number;
+  networkOut: number;
+}
+
 export interface Infra {
   _id: string;
   name: string;
-  environment: string;
-  apiKey: string;
-  status: string;
-  os?: string;
-  hostname?: string;
-  cpuCores: number;
-  diskGB: number;
-  memoryGB: number;
-  lastHeartbeat?: string;
-  ipAddress?: string;
-  agentVersion?: string;
+  description: string;
+  userId: string;
   tags: string[];
-  id: number;
+  environment: "production" | "staging" | "testing" | "development" | string;
+  os: string | null;
+  cpuCores: number;
+  memoryGB: number;
+  diskGB: number;
+  status: "online" | "offline" | "new" | string;
+  lastHeartbeat: string | null;
+  apiKey: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  hostname?: string;
+  agentVersion?: string;
+  ipAddress?: string;
+  metrics: InfraMetrics;
 }
+
+
+export interface GetInfraListResponse {
+  message: string;
+  infra: Infra[];
+}
+
+export interface NetworkMetric {
+  iface: string;
+  rx_bytes: number;
+  tx_bytes: number;
+  _id: string
+}
+
+export interface DiskMetric {
+  mount: string;
+  sizeGB: number;
+  usedGB: number;
+  _id: string;
+}
+
+
+
+export interface InfraMetric {
+  _id: string;
+  __v: number;
+  infraId: string;
+  timestamp: string;
+  hostname: string;
+  network: NetworkMetric[];
+  disk: DiskMetric[];
+  memory: {
+    totalGB: number;
+    usedGB: number;
+    _id: string;
+  };
+  cpu: {
+    cores: number;
+    speed: number;
+    load: number;
+    _id: string;
+    perCore: {
+      load: number;
+      loadUser: number;
+      loadSystem: number;
+      loadIdle: number;
+      _id: string
+    }[];
+  }
+}
+
+export interface GetInfraMetricsResponse {
+  success: boolean;
+  message: string;
+  infra: Infra;
+  metrics: InfraMetric[];
+}
+
