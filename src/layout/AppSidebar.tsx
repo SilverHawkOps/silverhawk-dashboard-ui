@@ -150,11 +150,7 @@ const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
 
-  // const { user = {role: ""} } = useAuth();
-
-  const { loading, isFeatureEnabled } = useFeatureFlags();
-
-  console.log(loading, isFeatureEnabled("sidebar_upgrade_widget"))
+  const { isFeatureEnabled } = useFeatureFlags();
 
   const renderMenuItems = (
     navItems: NavItem[],

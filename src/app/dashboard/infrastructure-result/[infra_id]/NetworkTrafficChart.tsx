@@ -6,10 +6,21 @@ import { ApexOptions } from "apexcharts";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const NetworkTrafficChart = ({ data }) => {
+
+
+interface NetworkTrafficChartProps {
+  data: {
+    timestamp: string;
+    rx_bytes: number;
+    tx_bytes: number;
+  }[];
+}
+
+const NetworkTrafficChart: React.FC<NetworkTrafficChartProps> = ({ data }) => {
+
   const labels = data.map(d => d.timestamp);
   const rxSeries = data.map(d => d.rx_bytes / 1024); // convert to KB
-  const txSeries = data.map( d => d.tx_bytes / 1024 );
+  const txSeries = data.map(d => d.tx_bytes / 1024);
 
   const series = [
     { name: "Inbound (Rx)", data: rxSeries },
@@ -56,7 +67,7 @@ const NetworkTrafficChart = ({ data }) => {
     legend: {
       position: "bottom",
       horizontalAlign: "center",
-      markers: { width: 12, height: 12, radius: 12 },
+      markers: {  },
     },
     responsive: [
       {
@@ -82,15 +93,3 @@ const NetworkTrafficChart = ({ data }) => {
 };
 
 export default NetworkTrafficChart;
-
-
-
-// import React from 'react'
-
-// const NetworkTrafficChart = () => {
-//   return (
-//     <div>NetworkTrafficChart</div>
-//   )
-// }
-
-// export default NetworkTrafficChart

@@ -3,18 +3,24 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
+import { InfraMetric } from "@/services/types";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const StorageChart = ({ data }) => {
-  const labels = data.map( ( d ) => d.timestamp );
-  
+interface MemoryChartProps {
+  data: InfraMetric[];
+}
+
+const StorageChart: React.FC<MemoryChartProps> = ({ data }) => {
+  const labels = data.map((d) => d.timestamp);
+
   // Compute storage metrics
   const totalStorage = Number(data[0]?.disk?.[0]?.sizeGB || 0);
   // const usedStorage = data.map((d) => Number(d.disk?.[0]?.usedGB || 0));
-  const usedStoragePercent = data.map((d) =>
-    ((Number(d.disk?.[0]?.usedGB || 0) / totalStorage) * 100).toFixed(2)
+  const usedStoragePercent = data.map(
+    (d) => Number(((Number(d.disk?.[0]?.usedGB || 0) / totalStorage) * 100).toFixed(2))
   );
+
 
   console.log(usedStoragePercent)
 
@@ -87,14 +93,3 @@ const StorageChart = ({ data }) => {
 };
 
 export default StorageChart;
-
-
-// import React from 'react'
-
-// const StorageChart = () => {
-//   return (
-//     <div>StorageChart</div>
-//   )
-// }
-
-// export default StorageChart

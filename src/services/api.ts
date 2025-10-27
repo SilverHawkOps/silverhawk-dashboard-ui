@@ -1,8 +1,8 @@
 // src/services/api.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Infra } from "./types";
+import { GetInfraListResponse, GetInfraMetricsResponse, Infra, InfraMetric, PageLoadResponse } from "./types";
 import {
-  Metric, Alert, FeatureFlags, Flag, InfraData,
+  Metric, Alert, FeatureFlags, Flag,
   LoginRequest,
   LoginResponse,
   InviteLinkRequest,
@@ -41,11 +41,13 @@ export const api = createApi({
 
     getInfraList: builder.query<Infra[], void>({
       query: () => "infra",
+      transformResponse: (response: GetInfraListResponse) => response.infra,
       providesTags: ["Infra"],
     }),
 
-    getInfraMetrics: builder.query<void, string>({
+    getInfraMetrics: builder.query<{infra: Infra, metrics: InfraMetric[]}, string>({
       query: (infraId) => `infra/${infraId}/metrics`,
+      transformResponse: (response: GetInfraMetricsResponse) => ({infra: response.infra, metrics: response.metrics}),
     }),
 
     getFeatureFlags: builder.query<Flag[], void>({
@@ -57,6 +59,9 @@ export const api = createApi({
       query: () => `feature-flags`,
       keepUnusedDataFor: 60,
     }),
+
+
+    //Mutations
 
     login: builder.mutation<LoginResponse, LoginRequest>({
       query: (body) => ({
@@ -82,7 +87,7 @@ export const api = createApi({
       }),
     }),
 
-    addInfra: builder.mutation<void, AddInfraRequest>({
+    addInfra: builder.mutation<Infra, AddInfraRequest>({
       query: (body) => ({
         url: "infra",
         method: "POST",
@@ -109,7 +114,7 @@ export const api = createApi({
       invalidatesTags: ["FeatureFlags"],
     }),
 
-    getPageLoadPerformanceByUrl: builder.mutation<void, GetPageLoadPerformanceByUrlRequest>({
+    getPageLoadPerformanceByUrl: builder.mutation<PageLoadResponse, GetPageLoadPerformanceByUrlRequest>({
       query: ({ url }) => ({
         url: "page-load-performance",
         method: "POST",

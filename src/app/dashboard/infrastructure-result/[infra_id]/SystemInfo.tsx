@@ -6,12 +6,21 @@ const STATUS_COLOR = {
   "maintenance": "bg-yellow-100 text-yellow-800",
   "new": "bg-blue-100 text-blue-800",
   "acknowledged": "bg-purple-100 text-purple-800",
-};
+} as const;
 
-const SystemInfo = ({ hostname, timestamp, status }) => {
+type StatusType = keyof typeof STATUS_COLOR;
 
-  const getStatusColor = (status) => {
-    return STATUS_COLOR[status] || "bg-gray-100 text-gray-800"
+interface SystemInfoProps {
+  hostname: string | undefined;
+  timestamp: string;
+  status: StatusType | string; // allow custom strings too
+}
+
+
+const SystemInfo: React.FC<SystemInfoProps> = ({ hostname, timestamp, status }) => {
+
+  const getStatusColor = (status: string) => {
+    return STATUS_COLOR[status as StatusType] || "bg-gray-100 text-gray-800";
   };
 
   return (
@@ -39,15 +48,3 @@ const SystemInfo = ({ hostname, timestamp, status }) => {
 };
 
 export default SystemInfo;
-
-
-
-// import React from 'react'
-
-// const SystemInfo = () => {
-//   return (
-//     <div>SystemInfo</div>
-//   )
-// }
-
-// export default SystemInfo

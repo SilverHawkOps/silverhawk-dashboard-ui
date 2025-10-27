@@ -14,6 +14,7 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
         offline: "bg-red-500 text-white",
         maintenance: "bg-yellow-500 text-white",
         new: "bg-blue-500 text-white",
+        acknowledged: "bg-green-100 text-black"
     };
     const color = colorScheme[status];
     return <span className={`px-2 py-1 rounded-full text-xs font-medium ${color}`}>{status}</span>;
@@ -23,11 +24,9 @@ const Infrastructures = () => {
 
     const { data, error, isLoading } = useGetInfraListQuery();
 
-    console.log(data)
-
-    const handleStart = (id: number) => alert(`Starting infra ${id}`);
-    const handleStop = (id: number) => alert(`Stopping infra ${id}`);
-    const handleDelete = (id: number) => {
+    const handleStart = (id: string) => alert(`Starting infra ${id}`);
+    const handleStop = (id: string) => alert(`Stopping infra ${id}`);
+    const handleDelete = (id: string) => {
         if (confirm("Are you sure you want to delete this infrastructure?")) {
             console.log("Deleted: ", id)
         }
@@ -35,7 +34,8 @@ const Infrastructures = () => {
 
 
     if (isLoading) return <p>Loading metrics...</p>;
-    if (error) return <p>Error fetching metrics</p>;
+    if (error || !data) return <p>Error fetching metrics</p>;
+    if (!data) return <p> Error</p>
 
     return (
         <div className="bg-gray-50 dark:bg-gray-900">
@@ -49,7 +49,7 @@ const Infrastructures = () => {
 
             </div>
 
-            <div className="w-full overflow-x-auto">
+            {data && data.length > 0 ? (<div className="w-full overflow-x-auto">
                 <table className="bg-white dark:bg-gray-800 rounded-xl shadow-md">
                     <thead className="bg-gray-100 dark:bg-gray-700 w-full">
                         <tr className="w-full text-sm">
@@ -70,7 +70,7 @@ const Infrastructures = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.length > 0 ? data.map((infra) => (
+                        {data.length > 0 && data.map((infra) => (
                             <tr key={infra._id} className="text-sm border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                 <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{infra.name}</td>
                                 <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{infra.environment}</td>
@@ -104,11 +104,11 @@ const Infrastructures = () => {
                                 </td>
                                 <td className="px-4 py-3 flex justify-center gap-2">
                                     {infra.status === "Running" ? (
-                                        <Button size="sm" variant="destructive" onClick={() => handleStop(infra.id)}>
+                                        <Button size="sm" variant="destructive" onClick={() => handleStop(infra._id)}>
                                             <PauseIcon className="h-4 w-4 mr-1" /> Stop
                                         </Button>
                                     ) : (
-                                        <Button size="sm" variant="destructive" onClick={() => handleStart(infra.id)}>
+                                        <Button size="sm" variant="destructive" onClick={() => handleStart(infra._id)}>
                                             <PlayIcon className="h-4 w-4 mr-1" /> Start
                                         </Button>
                                     )}
@@ -117,32 +117,22 @@ const Infrastructures = () => {
                                             <EyeIcon className="h-4 w-4 mr-1" /> Logs
                                         </Button>
                                     </Link>
-                                    <Button size="sm" variant="destructive" onClick={() => handleDelete(infra.id)}>
+                                    <Button size="sm" variant="destructive" onClick={() => handleDelete(infra._id)}>
                                         <TrashIcon className="h-4 w-4 mr-1" /> Delete
                                     </Button>
                                 </td>
                             </tr>
-                        ) ) : (
-                                <DataNotFound />
-                        )}
+                        ))}
                     </tbody>
                 </table>
-            </div>
+            </div>) : (
+                <DataNotFound />
+            )}
+
+
 
         </div>
     );
 };
 
 export default Infrastructures;
-
-
-
-// import React from 'react'
-
-// const Infrastructures = () => {
-//   return (
-//     <div>Infrastructures</div>
-//   )
-// }
-
-// export default Infrastructures

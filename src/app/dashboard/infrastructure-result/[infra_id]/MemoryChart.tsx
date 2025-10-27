@@ -3,6 +3,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
+import { InfraMetric } from "@/services/types";
 
 // Dynamically import ApexCharts to avoid SSR issues
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -10,7 +11,7 @@ const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 // ✅ Props type
 interface MemoryChartProps {
-  data: MemoryMetric[];
+  data: InfraMetric[];
 }
 
 const MemoryChart: React.FC<MemoryChartProps> = ({ data }) => {
@@ -95,14 +96,3 @@ const MemoryChart: React.FC<MemoryChartProps> = ({ data }) => {
 };
 
 export default MemoryChart;
-
-
-// import React from 'react'
-
-// const MemoryChart = () => {
-//   return (
-//     <div>MemoryChart</div>
-//   )
-// }
-
-// export default MemoryChart

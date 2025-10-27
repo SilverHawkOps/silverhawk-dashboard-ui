@@ -54,7 +54,7 @@ const InfrastructureModal: React.FC = () => {
   const [apiKey, setApiKey] = useState("");
   const [pingStatus, setPingStatus] = useState("Not checked");
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-  const [currentStep, setCurrentStep] = useState(1);
+  // const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<AddInfraRequest>({
     name: "",
     description: "",
@@ -63,7 +63,7 @@ const InfrastructureModal: React.FC = () => {
   });
 
   const [addInfra, {isLoading, error}] = useAddInfraMutation();
-  console.log(isLoading, error);
+  // console.log(addInfra, isLoading, error);
 
   const onChangeFormData = (field: string, value: string) => {
     if (!field) return;
@@ -79,21 +79,21 @@ const InfrastructureModal: React.FC = () => {
 
 
   const handleGenerateApiKey = async () => {
-    const key = `API-${Math.random().toString(36).slice(2, 12)}`;
+    const res = await addInfra(formData);
 
-    // const res = await addInfra(formData);
-
-    // console.log(res);
-
-    // return;
-    setApiKey(key);
+    if(res.data && res.data.apiKey) {
+      setApiKey(res.data.apiKey);
+    }
+    
     setCompletedSteps([1]);
-    setCurrentStep(2);
   };
 
   const markStepCompleted = (step: number) => {
     if (!completedSteps.includes(step)) setCompletedSteps([...completedSteps, step]);
   };
+
+  if(isLoading) return <p>Creating infrastructure...</p>;
+  if(error) return <p>Error creating infrastructure.</p>;
 
   return (
     <div className="w-full mx-auto p-6 space-y-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
@@ -194,7 +194,6 @@ const InfrastructureModal: React.FC = () => {
         <TerminalBlock command="npm i -g silverhawk-infra" />
         { !completedSteps.includes( 2 ) && <Button size="sm" onClick={ () => {
           markStepCompleted( 2 )
-          setCurrentStep(3)
         }}>Mark as Done</Button>}
       </StepCard>}
 

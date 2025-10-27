@@ -2,13 +2,40 @@
 import { useGetPageLoadPerformanceByUrlMutation } from "@/services/api";
 import React, { useState } from "react";
 
-interface PerformanceData {
-  url: string;
-  score: number;
-  metrics: Record<string, number>;
-  [ key: string ]: any;
+interface Audit {
+  id?: string;
+  title: string;
+  description?: string;
+  displayValue?: string;
+  score: number | null;
+  category?: string;
+  details?: {
+    items?: Array<{
+      timing: number;
+      data: string; // base64 image
+    }>;
+  };
 }
 
+// Type for screenshot thumbnails audit
+interface ScreenshotThumbnailsAudit extends Audit {
+  details: {
+    items: {
+      timing: number;
+      data: string;
+    }[];
+  };
+}
+// Main performance data type
+interface PerformanceData {
+  requestedUrl: string;
+  fetchTime: string;
+  gatherMode: string;
+  audits: {
+    [key: string]: Audit | ScreenshotThumbnailsAudit;
+    "screenshot-thumbnails": ScreenshotThumbnailsAudit;
+  };
+}
 interface WebsiteCheckFormProps {
   onSubmit: ( data: PerformanceData ) => void;
 }
@@ -20,13 +47,16 @@ const WebsiteCheckForm: React.FC<WebsiteCheckFormProps> = ( { onSubmit } ) => {
   const [ getPageLoadPerformance, { isLoading, error } ] = useGetPageLoadPerformanceByUrlMutation();
 
   console.log( isLoading, error )
-  const handleSubmit = async ( e ) => {
+  const handleSubmit = async ( e:React.FormEvent<HTMLFormElement> ) => {
     e.preventDefault();
     if ( !url ) return;
 
     const res = await getPageLoadPerformance( { url: url } );
 
-    onSubmit( res.data );
+    if(res?.data) {
+      onSubmit( res.data );
+    }
+
   };
 
   return (

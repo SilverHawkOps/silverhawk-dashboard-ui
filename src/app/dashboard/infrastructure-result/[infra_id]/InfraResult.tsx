@@ -5,17 +5,18 @@ import { useGetInfraMetricsQuery } from '@/services/api';
 import React from 'react';
 import CPUChart from './CPU';
 import MemoryChart from './MemoryChart';
-import StorageChart from './StorageChart';
+// import StorageChart from './StorageChart';
 import NetworkTrafficChart from './NetworkTrafficChart';
 import SystemInfo from './SystemInfo';
-import { DiskInfo, InfraData, Metric } from '@/services/types';
+import { DiskInfo, InfraMetric } from '@/services/types';
+import StorageChart from './StorageChart';
 
 interface InfraResultProps {
   infraId: string;
 }
 
 const InfraResult: React.FC<InfraResultProps> = ({ infraId }) => {
-  const { data, refetch } = useGetInfraMetricsQuery<InfraData>(
+  const { data, refetch } = useGetInfraMetricsQuery(
     infraId,
     { refetchOnMountOrArgChange: false }
   );
@@ -24,26 +25,23 @@ const InfraResult: React.FC<InfraResultProps> = ({ infraId }) => {
     refetch();
   };
 
-  console.log(data)
-
   if (!data || !data.metrics) return <p>No data found</p>;
 
-  // ✅ Transform CPU data for chart
-  const cpuData = data.metrics.map((item: Metric) => ({
+
+  console.log(data)
+
+  const cpuData = data.metrics.map((item: InfraMetric) => ({
     timestamp: new Date(item.timestamp).toLocaleString(),
     cpu: { load: item.cpu },
   } ) );
   
-  console.log(cpuData)
-
   // ✅ Transform Network data for chart
-  const networkData = data.metrics.map((item: Metric) => ({
+  const networkData = data.metrics.map((item: InfraMetric) => ({
     timestamp: new Date(item.timestamp).toLocaleString(),
     rx_bytes: item.network?.[0]?.rx_bytes ?? 0,
     tx_bytes: item.network?.[0]?.tx_bytes ?? 0,
   } ) );
   
-  console.log(networkData)
 
   // ✅ Safely get last disk metric
   const lastDisk: DiskInfo[] = data.metrics[data.metrics.length - 1]?.disk ?? [];
@@ -63,10 +61,10 @@ const InfraResult: React.FC<InfraResultProps> = ({ infraId }) => {
         status={data.infra.status}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <CPUChart data={cpuData} />
         <MemoryChart data={data.metrics} />
-        {/* <StorageChart data={data.metrics} /> */}
+        <StorageChart data={data.metrics} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -110,15 +108,3 @@ const InfraResult: React.FC<InfraResultProps> = ({ infraId }) => {
 };
 
 export default InfraResult;
-
-
-
-// import React from 'react'
-
-// const InfraResult = () => {
-//   return (
-//     <div>InfraResult</div>
-//   )
-// }
-
-// export default InfraResult
