@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { TrashIcon, PlayIcon, PauseIcon, EyeIcon, PlusIcon } from "lucide-react";
+import { TrashIcon, PlayIcon, PauseIcon, PlusIcon, BarChart3Icon, CpuIcon } from "lucide-react";
 import Button from "@/components/ui/button/Button";
 import Link from "next/link";
 import { useGetInfraListQuery } from "@/services/api";
@@ -102,24 +102,41 @@ const Infrastructures = () => {
                                         ))}
                                     </div>
                                 </td>
-                                <td className="px-4 py-3 flex justify-center gap-2">
+                                <td className="px-4 py-3 flex justify-center items-center space-x-4">
                                     {infra.status === "Running" ? (
-                                        <Button size="sm" variant="destructive" onClick={() => handleStop(infra._id)}>
-                                            <PauseIcon className="h-4 w-4 mr-1" /> Stop
-                                        </Button>
+                                        <button
+                                            className="text-red-500 hover:text-red-600 transition"
+                                            onClick={() => handleStop(infra._id)}
+                                        >
+                                            <PauseIcon className="h-4 w-4" />
+                                        </button>
                                     ) : (
-                                        <Button size="sm" variant="destructive" onClick={() => handleStart(infra._id)}>
-                                            <PlayIcon className="h-4 w-4 mr-1" /> Start
-                                        </Button>
+                                        <button
+                                            className="text-green-500 hover:text-green-600 transition"
+                                            onClick={() => handleStart(infra._id)}
+                                        >
+                                            <PlayIcon className="h-4 w-4" />
+                                        </button>
                                     )}
-                                    <Link href={`/dashboard/infrastructure-result/${infra._id}`}>
-                                        <Button size="sm" variant="outline">
-                                            <EyeIcon className="h-4 w-4 mr-1" /> Logs
-                                        </Button>
+
+                                    <Link href={`/dashboard/infra/${infra._id}/metrics`}>
+                                        <button className="text-blue-500 hover:text-blue-600 transition">
+                                            <BarChart3Icon className="h-4 w-4" />
+                                        </button>
                                     </Link>
-                                    <Button size="sm" variant="destructive" onClick={() => handleDelete(infra._id)}>
-                                        <TrashIcon className="h-4 w-4 mr-1" /> Delete
-                                    </Button>
+
+                                    <Link href={`/dashboard/infra/${infra._id}/processes`}>
+                                        <button className="text-yellow-500 hover:text-yellow-600 transition">
+                                            <CpuIcon className="h-4 w-4" />
+                                        </button>
+                                    </Link>
+
+                                    <button
+                                        className="text-gray-500 hover:text-red-600 transition"
+                                        onClick={() => handleDelete(infra._id)}
+                                    >
+                                        <TrashIcon className="h-4 w-4" />
+                                    </button>
                                 </td>
                             </tr>
                         ))}

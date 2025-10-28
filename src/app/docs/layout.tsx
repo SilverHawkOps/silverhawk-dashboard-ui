@@ -1,10 +1,10 @@
 "use client";
 
+import DocsHelp from "@/components/docs-help/DocsHelp";
 import { useSidebar } from "@/context/SidebarContext";
-import { useAuth } from "@/hooks/useAuth";
-import AppHeader from "@/layout/AppHeader";
-import AppSidebar from "@/layout/AppSidebar";
-import Backdrop from "@/layout/Backdrop";
+import AppHeader from "@/docsLayout/AppHeader";
+import AppSidebar from "@/docsLayout/AppSidebar";
+import Backdrop from "@/docsLayout/Backdrop";
 import React from "react";
 
 export default function AdminLayout({
@@ -13,7 +13,6 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-  const { loading, isUserLoggedIn } = useAuth();
 
   // Dynamic class for main content margin based on sidebar state
   const mainContentMargin = isMobileOpen
@@ -21,14 +20,6 @@ export default function AdminLayout({
     : isExpanded || isHovered
       ? "lg:ml-[290px]"
       : "lg:ml-[90px]";
-
-  if (loading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
-
-  if (!isUserLoggedIn) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen xl:flex">
@@ -42,7 +33,11 @@ export default function AdminLayout({
         {/* Header */}
         <AppHeader />
         {/* Page Content */}
-        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-4">{children}</div>
+        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-4">
+          {children}
+          <DocsHelp />
+        </div>
+
       </div>
     </div>
   );

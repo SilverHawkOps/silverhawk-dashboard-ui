@@ -5,16 +5,17 @@ import { useGetInfraMetricsQuery } from '@/services/api';
 import React from 'react';
 import CPUChart from './CPU';
 import MemoryChart from './MemoryChart';
+// import StorageChart from './StorageChart';
 import NetworkTrafficChart from './NetworkTrafficChart';
 import SystemInfo from './SystemInfo';
 import { DiskInfo, InfraMetric } from '@/services/types';
 import StorageChart from './StorageChart';
 
-interface InfraResultProps {
+interface InfraMetricsDashboardProps {
   infraId: string;
 }
 
-const InfraResult: React.FC<InfraResultProps> = ({ infraId }) => {
+const InfraMetricsDashboard: React.FC<InfraMetricsDashboardProps> = ({ infraId }) => {
   const { data, refetch } = useGetInfraMetricsQuery(
     infraId,
     { refetchOnMountOrArgChange: false }
@@ -31,6 +32,7 @@ const InfraResult: React.FC<InfraResultProps> = ({ infraId }) => {
     cpu: { load: item.cpu },
   } ) );
   
+  // ✅ Transform Network data for chart
   const networkData = data.metrics.map((item: InfraMetric) => ({
     timestamp: new Date(item.timestamp).toLocaleString(),
     rx_bytes: item.network?.[0]?.rx_bytes ?? 0,
@@ -38,6 +40,7 @@ const InfraResult: React.FC<InfraResultProps> = ({ infraId }) => {
   } ) );
   
 
+  // ✅ Safely get last disk metric
   const lastDisk: DiskInfo[] = data.metrics[data.metrics.length - 1]?.disk ?? [];
 
   return (
@@ -101,4 +104,4 @@ const InfraResult: React.FC<InfraResultProps> = ({ infraId }) => {
   );
 };
 
-export default InfraResult;
+export default InfraMetricsDashboard;

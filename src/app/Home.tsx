@@ -1,12 +1,13 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
-import { Activity, AlertCircle, BarChart3, Bell, ChevronDown, Cpu, FileText, Plug, Server, Settings, ShieldCheck, User, Users, Zap, } from "lucide-react";
+import React, { useState } from "react";
+import { Activity, AlertCircle, Bell, CheckIcon, ChevronDown, Cpu, CrossIcon, FileText, Plug, Server, Settings, User, Users, Zap, } from "lucide-react";
 import HeroSection from "@/components/home/HeroSection";
 
 import { motion } from "framer-motion";
 import { analytics } from "@/lib/analytics";
+import { Modal } from "@/components/ui/modal";
 
 export default function HomePage() {
     const features = [
@@ -194,6 +195,8 @@ export default function HomePage() {
         },
     ];
 
+    const [isDemoModalOpen, setDemoModalOpen] = useState(false);
+
     return (
         <>
             <main className="bg-[#0f1620] min-h-screen text-white font-sans">
@@ -214,6 +217,9 @@ export default function HomePage() {
                             <Link href="/signup" className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-5 py-2 rounded-md font-medium hover:scale-105 transition">
                                 Get Started
                             </Link>
+                            <button onClick={() => setDemoModalOpen(true)} className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-5 py-2 rounded-md font-medium hover:scale-105 transition">
+                                See Demo
+                            </button>
                         </div>
                     </div>
                 </header>
@@ -301,8 +307,8 @@ export default function HomePage() {
                         <button onClick={ () => analytics.track( "home_start_free_trial_btn", { type: "button", environment: "production" } ) } className="bg-white text-blue-700 hover:bg-gray-100 font-semibold px-8 py-3 rounded-md shadow-md transition">
                             Start Free Trial
                         </button>
-                        <button onClick={ () => analytics.track( "home_schedule_a_demo_btn", { type: "button", environment: "production" } ) } className="border border-white text-white hover:bg-white hover:text-blue-700 font-semibold px-8 py-3 rounded-md transition">
-                            Schedule a Demo
+                        <button onClick={() => analytics.track("home_schedule_a_demo_btn", { type: "button", environment: "production" })} className="border border-white text-white hover:bg-white hover:text-blue-700 font-semibold px-8 py-3 rounded-md transition">
+                            See Demo
                         </button>
                     </div>
                 </div>
@@ -474,7 +480,7 @@ export default function HomePage() {
                                 </div>
                                 <p className="text-gray-300 italic">{ `"` }{ t.quote }{ `"` }</p>
                             </div>
-                        ) ) }
+                        ))}
                     </div>
                 </div>
 
@@ -574,6 +580,18 @@ export default function HomePage() {
                     </p>
                 </div>
             </footer>
+
+            <Modal isOpen={isDemoModalOpen} onClose={() => setDemoModalOpen(false)}>
+                <div className="w-full bg-gray-800 flex items-center justify-center rounded-lg">
+                    <video
+                        src="https://res.cloudinary.com/deljpdbts/video/upload/v1761587642/silverhawk-apm-demo-setup_z0v9ko.mp4"
+                        controls
+                        className="w-full h-full object-contain rounded-lg"
+                    >
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </Modal>
         </>
     );
 }
