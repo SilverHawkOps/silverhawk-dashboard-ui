@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import { Activity, AlertCircle, Bell, CheckIcon, ChevronDown, Cpu, CrossIcon, FileText, Plug, Server, Settings, User, Users, Zap, } from "lucide-react";
+import { Activity, AlertCircle, BarChart3, Bell, ChevronDown, Cpu, FileText, Plug, Server, Settings, ShieldCheck, User, Users, Zap, } from "lucide-react";
 import HeroSection from "@/components/home/HeroSection";
 
 import { motion } from "framer-motion";
