@@ -10,10 +10,9 @@ import React, { useState } from "react";
 export default function SignUpForm() {
   const [email, setEmail] = useState("");
   const [isChecked, setIsChecked] = useState(false);
-  const [sendMagicLink, { isLoading, isSuccess, error }] =
+  const [sendMagicLink] =
     useSendInviteLinkMutation();
 
-    console.log(isLoading, isSuccess, error);
 
    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
