@@ -10,7 +10,7 @@ interface MaskedKeyProps {
 const MaskedApiKey: React.FC<MaskedKeyProps> = ({ token }) => {
 
   // Mask all except first 6 characters (you can adjust)
-  const masked = token ? token.slice(0, 6) + "*******" : "";
+  const masked = token ? token.slice(0, 12) + "*******" : "";
 
   const handleCopy = () => {
     if (!token) return;
@@ -23,7 +23,7 @@ const MaskedApiKey: React.FC<MaskedKeyProps> = ({ token }) => {
       <span className="font-mono">{masked}</span>
       <button
         onClick={handleCopy}
-        className="text-gray-400 px-2 py-1 rounded hover:text-gray-700 text-sm"
+        className="text-gray-400 px-2 py-1 rounded hover:text-gray-700 dark:hover:text-white text-sm"
         title="Copy API key"
       >
         <ClipboardCopyIcon />

@@ -1,12 +1,13 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { Activity, AlertCircle, Bell, CheckIcon, ChevronDown, Cpu, CrossIcon, FileText, Plug, Server, Settings, User, Users, Zap, } from "lucide-react";
 import HeroSection from "@/components/home/HeroSection";
 
 import { motion } from "framer-motion";
 import { analytics } from "@/lib/analytics";
+import { Modal } from "@/components/ui/modal";
 
 export default function HomePage() {
     const features = [
@@ -194,12 +195,7 @@ export default function HomePage() {
         },
     ];
 
-    const companies = [
-        "/logos/google.svg",
-        "/logos/microsoft.svg",
-        "/logos/aws.svg",
-        "/logos/slack.svg",
-    ];
+    const [isDemoModalOpen, setDemoModalOpen] = useState(false);
 
     return (
         <>
@@ -221,6 +217,9 @@ export default function HomePage() {
                             <Link href="/signup" className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-5 py-2 rounded-md font-medium hover:scale-105 transition">
                                 Get Started
                             </Link>
+                            <button onClick={() => setDemoModalOpen(true)} className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-5 py-2 rounded-md font-medium hover:scale-105 transition">
+                                See Demo
+                            </button>
                         </div>
                     </div>
                 </header>
@@ -310,7 +309,7 @@ export default function HomePage() {
                             Start Free Trial
                         </button>
                         <button onClick={() => analytics.track("home_schedule_a_demo_btn", { type: "button", environment: "production" })} className="border border-white text-white hover:bg-white hover:text-blue-700 font-semibold px-8 py-3 rounded-md transition">
-                            Schedule a Demo
+                            See Demo
                         </button>
                     </div>
                 </div>
@@ -413,19 +412,6 @@ export default function HomePage() {
                             </div>
                         ))}
                     </div>
-
-                    {/* Optional Company Logos / Trust Signals */}
-                    <div className="flex flex-wrap justify-center items-center gap-8">
-                        {companies.map((logo, index) => (
-                            <Image
-                                key={index}
-                                src={logo}
-                                alt={`Company ${index + 1}`}
-                                width={12} height={12}
-                                className="h-12 filter brightness-150 opacity-70 hover:opacity-100 transition"
-                            />
-                        ))}
-                    </div>
                 </div>
 
                 {/* Decorative shapes */}
@@ -524,6 +510,18 @@ export default function HomePage() {
                     </p>
                 </div>
             </footer>
+
+            <Modal isOpen={isDemoModalOpen} onClose={() => setDemoModalOpen(false)}>
+                <div className="w-full bg-gray-800 flex items-center justify-center rounded-lg">
+                    <video
+                        src="https://res.cloudinary.com/deljpdbts/video/upload/v1761587642/silverhawk-apm-demo-setup_z0v9ko.mp4"
+                        controls
+                        className="w-full h-full object-contain rounded-lg"
+                    >
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </Modal>
         </>
     );
 }
