@@ -150,7 +150,7 @@ export const navItems = [
   {
     name: "Help & Support",
     icon: <LifeBuoy className="w-4 h-4" />,
-    path: "/docs/help",
+    path: "/docs/help-and-support",
   },
 ];
 

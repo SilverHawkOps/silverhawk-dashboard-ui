@@ -209,7 +209,7 @@ export default function HomePage() {
                         <nav className="hidden md:flex gap-8 text-sm font-medium">
                             <Link href="#features" className="hover:text-blue-400 transition">Features</Link>
                             <Link href="#pricing" className="hover:text-blue-400 transition">Pricing</Link>
-                            <Link href="#workflow" className="hover:text-blue-400 transition">Docs</Link>
+                            <Link href="/docs" className="hover:text-blue-400 transition">Docs</Link>
                             <Link href="#contact" className="hover:text-blue-400 transition">Contact</Link>
                         </nav>
                         <div className="flex items-center gap-4">
