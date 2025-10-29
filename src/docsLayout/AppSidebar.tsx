@@ -68,6 +68,7 @@ export const navItems = [
   {
     name: "Synthetic Monitoring",
     icon: <Network className="w-4 h-4" />,
+    path: "/docs/synthetic",
     subItems: [
       {
         name: "Availability",
