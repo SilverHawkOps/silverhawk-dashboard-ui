@@ -1,3 +1,4 @@
+import ComparisonTable from "@/app/ComparisonTable";
 import CodeBlock from "@/components/code-block/CodeBlock";
 import React from "react";
 
@@ -128,7 +129,7 @@ export default function GettingStartedPage() {
 
             <div className="border border-gray-200 bg-gray-50 p-6 rounded-lg mb-8">
                 <p className="font-mono text-sm text-gray-800 whitespace-pre">
-                    {/* TODO: add workflow image */ }
+                    {/* TODO: add workflow image */}
                 </p>
             </div>
 
@@ -187,19 +188,22 @@ export default function GettingStartedPage() {
                 ensuring it remains lightweight and production-safe.
             </p>
 
-            <h2 className="text-2xl font-semibold mt-10 mb-4">
-                Why Choose Silverhawk?
-            </h2>
+            <div>
+                <h2 className="text-2xl font-semibold mt-10 mb-4">
+                    Why Choose Silverhawk?
+                </h2>
 
-            <p className="text-gray-700 leading-relaxed mb-6">
-                Silverhawk emphasizes a developer-first experience by removing the
-                friction of traditional monitoring setups. There are no complex
-                configuration files to edit or agents to compile — installation and
-                connection to the dashboard take only a few seconds. Silverhawk runs
-                seamlessly across Linux, macOS, and Windows environments, offering
-                instant visibility and reliable data streams from the moment it’s
-                installed.
-            </p>
+                <p className="text-gray-700 leading-relaxed mb-6">
+                    Silverhawk emphasizes a developer-first experience by removing the
+                    friction of traditional monitoring setups. There are no complex
+                    configuration files to edit or agents to compile — installation and
+                    connection to the dashboard take only a few seconds. Silverhawk runs
+                    seamlessly across Linux, macOS, and Windows environments, offering
+                    instant visibility and reliable data streams from the moment it’s
+                    installed.
+                </p>
+                <ComparisonTable />
+            </div>
 
             <p className="text-gray-700 leading-relaxed mb-6">
                 With its roadmap expanding toward Application Performance Monitoring,
@@ -209,14 +213,43 @@ export default function GettingStartedPage() {
 
             <h2 className="text-2xl font-semibold mt-10 mb-4">Example Installation</h2>
 
-            <CodeBlock code={ `npm i -g silverhawk-infra\n\nsilverhawk-infra start --api-key <YOUR_API_KEY>` } />
+            <CodeBlock
+                code={`npm i -g silverhawk-infra
 
-            <p className="text-gray-700 leading-relaxed">
-                Once the agent connects successfully, your infrastructure will appear in
-                the Silverhawk Dashboard with a status of <strong>“Acknowledged”</strong>.
-                As metrics begin to stream in, the status updates to{ " " }
-                <strong>“Online”</strong>, indicating active monitoring and data flow.
+# Step 1: Send initial heartbeat
+silverhawk-infra heartbeat --api-key <YOUR_API_KEY>
+
+# Step 2: Start monitoring
+silverhawk-infra start --api-key <YOUR_API_KEY>`}
+            />
+
+            <p className="text-gray-700 leading-relaxed mt-4">
+                Begin by installing the SilverHawk agent globally and sending a{" "}
+                <strong>heartbeat</strong> to register your infrastructure.
+                Once acknowledged, the dashboard will display its status as{" "}
+                <strong>“Acknowledged”</strong>.
             </p>
+
+            <p className="text-gray-700 leading-relaxed mt-2">
+                Next, start the monitoring process using the{" "}
+                <code>start</code> command. When metrics begin streaming successfully,
+                the status automatically updates to <strong>“Online”</strong>,
+                indicating active monitoring and healthy data flow.
+            </p>
+
+
+            <div className="bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-sm overflow-x-auto mt-6">
+                <pre className="whitespace-pre">
+                    {`[Agent Installed]
+        ↓
+[Heartbeat Sent] → Status: "Acknowledged"
+        ↓
+[Start Monitoring] → Metrics Begin Streaming
+        ↓
+[Dashboard Updates] → Status: "Online"`}
+                </pre>
+            </div>
+
         </div>
     );
 }

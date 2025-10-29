@@ -257,3 +257,28 @@ export interface GetInfraMetricsResponse {
   metrics: InfraMetric[];
 }
 
+export interface SSLMonitor {
+  createdAt: string;
+  daysRemaining: number;
+  domain: string;
+  issuer: string;
+  repeatJobKey: string;
+  sslStatus: string;
+  status: string;
+  updatedAt: string;
+  userId: string;
+  validFrom: string;
+  validTo: string;
+  __v: number;
+  _id: string;
+}
+
+
+export interface GetSSLMonitorsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    monitors: SSLMonitor[];
+  }
+}
+

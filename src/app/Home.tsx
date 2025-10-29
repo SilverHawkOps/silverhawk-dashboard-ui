@@ -8,6 +8,7 @@ import HeroSection from "@/components/home/HeroSection";
 import { motion } from "framer-motion";
 import { analytics } from "@/lib/analytics";
 import { Modal } from "@/components/ui/modal";
+import ComparisonTable from "./ComparisonTable";
 
 export default function HomePage() {
     const features = [
@@ -261,6 +262,8 @@ export default function HomePage() {
                 <div className="absolute top-0 -left-32 w-96 h-96 bg-blue-200 opacity-10 rounded-full mix-blend-multiply animate-pulse"></div>
                 <div className="absolute bottom-0 -right-32 w-96 h-96 bg-purple-200 opacity-10 rounded-full mix-blend-multiply animate-pulse"></div>
             </section>
+
+            <ComparisonTable />
 
             <section className="py-20 bg-gray-900 text-center relative overflow-hidden">
                 <div className="container mx-auto px-6">

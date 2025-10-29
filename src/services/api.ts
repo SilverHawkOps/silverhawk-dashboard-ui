@@ -1,8 +1,8 @@
 // src/services/api.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { GetInfraListResponse, GetInfraMetricsResponse, Infra, InfraMetric, PageLoadResponse } from "./types";
+import { GetInfraListResponse, GetInfraMetricsResponse, GetSSLMonitorsResponse, Infra, InfraMetric, PageLoadResponse, SSLMonitor } from "./types";
 import {
-  Metric, Alert, FeatureFlags, Flag,
+  Metric, FeatureFlags, Flag,
   LoginRequest,
   LoginResponse,
   InviteLinkRequest,
@@ -34,8 +34,9 @@ export const api = createApi({
       providesTags: ["Metrics"],
     }),
 
-    getSSLMonitors: builder.query<Alert[], void>({
+    getSSLMonitors: builder.query<SSLMonitor[], void>({
       query: () => "track-ssl",
+      transformResponse: (response: GetSSLMonitorsResponse) => response.data.monitors,
       providesTags: ["Alerts"],
     }),
 

@@ -1,182 +1,254 @@
-// "use client";
-// import React, { useState } from "react";
-// import { AppWindowIcon, Edit, FlagIcon, LayoutIcon, PlusIcon, Trash } from "lucide-react";
-// import Button from "@/components/ui/button/Button";
-// import Link from "next/link";
-// import { useGetFeatureFlagsQuery, useUpdateFeatureFlagStatusMutation } from "@/services/api";
-// import Switch from "@/components/form/switch/Switch";
-// import DataNotFound from "@/components/data-not-found/DataNotFound";
-// import { Flag } from "@/services/types";
+"use client";
+import React, { useState } from "react";
+import { AppWindowIcon, Edit, FlagIcon, LayoutIcon, PlusIcon, Trash } from "lucide-react";
+import Button from "@/components/ui/button/Button";
+import Link from "next/link";
+import { useGetFeatureFlagsQuery, useUpdateFeatureFlagStatusMutation } from "@/services/api";
+import Switch from "@/components/form/switch/Switch";
+import DataNotFound from "@/components/data-not-found/DataNotFound";
+import { Flag } from "@/services/types";
+import { Modal } from "@/components/ui/modal";
 
 
-// const FeatureFlags = () => {
-
-//     const [activeTab, setActiveTab] = useState("application");
-
-//     const handleTabClick = (key: string) => {
-//         setActiveTab(key);
-//     };
-
-
-//     const { data, error: queryError, isLoading: queryLoading } = useGetFeatureFlagsQuery({});
-//     const [updateFeatureFlagStatus, { isLoading: mutationLoading, error: mutationError }] = useUpdateFeatureFlagStatusMutation();
-
-//     if (queryLoading || mutationLoading) return <p>Loading feature flags...</p>;
-//     if (queryError || mutationError) return <p>Error fetching feature flags</p>;
-
-//     const renderFlagList = (data: Flag[], key: string) => {
-
-//         const filteredFlags = data.filter((flag) => flag.type === key);
-
-//         return (
-//             <div className="w-full overflow-x-auto">
-//                 {filteredFlags.length > 0 ? (
-//                     <table className="bg-white dark:bg-gray-800 rounded-xl shadow-md w-full">
-//                         <thead className="bg-gray-100 dark:bg-gray-700 w-full">
-//                             <tr className="w-full text-sm">
-//                                 <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Sr. No.</th>
-//                                 <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Name</th>
-//                                 <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Description</th>
-//                                 <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Key</th>
-//                                 <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Status</th>
-//                                 <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Toggle</th>
-//                                 <th className="text-center px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Actions</th>
-//                             </tr>
-//                         </thead>
-//                         <tbody>
-//                             {filteredFlags.map((flag, index) => (
-//                                 <tr
-//                                     key={flag._id}
-//                                     className="text-sm border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-//                                 >
-//                                     <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{index + 1}</td>
-//                                     <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{flag.name}</td>
-//                                     <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{flag.description || "—"}</td>
-//                                     <td className="px-4 py-3 text-gray-600 dark:text-gray-300"><span className="italic p-1">{flag.key}</span></td>
-//                                     <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
-//                                         {flag.is_enabled ? "Enabled" : "Disabled"}
-//                                     </td>
-//                                     <td>
-//                                         <Switch label="" color="blue" defaultChecked={flag.is_enabled} onChange={(checked) => handleToggle(flag.name, checked)} />
-//                                     </td>
-//                                     <td className="px-4 py-3 flex justify-center gap-3">
-//                                         {/* Edit button */}
-//                                         <Link href={`/dashboard/feature-flags/edit/${flag._id}`} className="text-black dark:text-white cursor-pointer" title="Edit">
-//                                             <Edit width={20} />
-//                                         </Link>
-
-//                                         {/* Delete button */}
-//                                         <Trash width={20} onClick={() => handleDelete(flag._id)} className="text-black dark:text-white cursor-pointer" />
-//                                     </td>
-//                                 </tr>
-//                             ))}
-
-//                         </tbody>
-//                     </table>
-//                 ) : (
-//                     <DataNotFound />
-//                 )}
-
-//             </div>
-//         )
-//     }
-
-//     const tabs = [
-//         {
-//             key: "application",
-//             label: "Application Level",
-//             icon: <AppWindowIcon className="h-4 w-4" />,
-//             content: renderFlagList(data, "application"),
-//         },
-//         {
-//             key: "ui",
-//             label: "UI Level",
-//             icon: <LayoutIcon className="h-4 w-4" />,
-//             content: renderFlagList(data, "ui"),
-//         },
-//         {
-//             key: "feature",
-//             label: "Feature Level",
-//             icon: <FlagIcon className="h-4 w-4" />,
-//             content: renderFlagList(data, "feature"),
-//         },
-//     ];
-
-
-
-//     const handleToggle = async (name: string, checked: boolean) => {
-//         try {
-//             await updateFeatureFlagStatus({ name, is_enabled: checked }).unwrap();
-//             console.log(`Feature flag ${name} is now ${checked ? "enabled" : "disabled"}`);
-//         } catch (err) {
-//             console.error("Failed to update feature flag status", err);
-//         }
-//     };
-
-//     const handleDelete = (id: string) => {
-//         console.log(id)
-//         if (confirm("Are you sure you want to delete this feature flag?")) {
-//             alert("deleted"); // Replace with actual delete mutation later
-//         }
-//     };
-
-//     return (
-
-//         <div className="bg-gray-50 dark:bg-gray-900 space-y-2">
-
-
-//             <div className="flex justify-between items-center mb-6">
-//                 <h1 className="text-lg font-bold text-gray-800 dark:text-white">Feature Flags</h1>
-//                 <Link href={"/dashboard/add-new-infrastructure"} className="flex items-center gap-2">
-//                     <Button className="w-full" size="xs" startIcon={<PlusIcon />}>
-//                         Add New
-//                     </Button>
-//                 </Link>
-
-//             </div>
-
-//             <div className={`w-full bg-white border border-gray-200 rounded-lg`}>
-//                 {/* Tab headers */}
-//                 <div className="border-b border-gray-200 dark:border-gray-700 mb-4">
-//                     <ul className="flex flex-wrap gap-2">
-//                         {tabs.map((tab) => {
-//                             const isActive = activeTab === tab.key;
-//                             return (
-//                                 <li key={tab.key}>
-//                                     <button
-//                                         onClick={() => handleTabClick(tab.key)}
-//                                         className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ${isActive
-//                                             ? "bg-white dark:bg-gray-900 text-blue-600 border-b-2 border-blue-500 dark:text-blue-400"
-//                                             : "text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800"
-//                                             }`}
-//                                     >
-//                                         {tab.icon && <span>{tab.icon}</span>}
-//                                         {tab.label}
-//                                     </button>
-//                                 </li>
-//                             );
-//                         })}
-//                     </ul>
-//                 </div>
-
-//                 {/* Tab content */}
-//                 <div className="p-4">
-//                     {tabs.find((tab) => tab.key === activeTab)?.content}
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-
-// export default FeatureFlags;
-
-
-import React from 'react'
-
-const FeatureFlags = () => {
+const FieldRequiredAsterisk = () => {
   return (
-    <div>FeatureFlags</div>
+    <span className="text-red-500">*</span>
   )
 }
 
-export default FeatureFlags
+
+const FeatureFlags = () => {
+
+  const [activeTab, setActiveTab] = useState("application");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleTabClick = (key: string) => {
+    setActiveTab(key);
+  };
+
+
+  const { data, error: queryError, isLoading: queryLoading } = useGetFeatureFlagsQuery();
+  const [updateFeatureFlagStatus, { isLoading: mutationLoading, error: mutationError }] = useUpdateFeatureFlagStatusMutation();
+
+  if (queryLoading || mutationLoading) return <p>Loading feature flags...</p>;
+  if (queryError || mutationError) return <p>Error fetching feature flags</p>;
+
+  const renderFlagList = (data: Flag[], key: string) => {
+
+    const filteredFlags = data.filter((flag) => flag.type === key);
+
+    return (
+      <div className="w-full overflow-x-auto">
+        {filteredFlags.length > 0 ? (
+          <table className="bg-white dark:bg-gray-800 rounded-xl shadow-md w-full">
+            <thead className="bg-gray-100 dark:bg-gray-700 w-full">
+              <tr className="w-full text-sm">
+                <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Sr. No.</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Name</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Description</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Key</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Status</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Toggle</th>
+                <th className="text-center px-4 py-3 font-semibold text-gray-700 dark:text-gray-200">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredFlags.map((flag, index) => (
+                <tr
+                  key={flag._id}
+                  className="text-sm border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{index + 1}</td>
+                  <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{flag.name}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{flag.description || "—"}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-300"><span className="italic p-1">{flag.key}</span></td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                    {flag.is_enabled ? "Enabled" : "Disabled"}
+                  </td>
+                  <td>
+                    <Switch label="" color="blue" defaultChecked={flag.is_enabled} onChange={(checked) => handleToggle(flag.name, checked)} />
+                  </td>
+                  <td className="px-4 py-3 flex justify-center gap-3">
+                    {/* Edit button */}
+                    <Link href={`/dashboard/feature-flags/edit/${flag._id}`} className="text-black dark:text-white cursor-pointer" title="Edit">
+                      <Edit width={20} />
+                    </Link>
+
+                    {/* Delete button */}
+                    <Trash width={20} onClick={() => handleDelete(flag._id)} className="text-black dark:text-white cursor-pointer" />
+                  </td>
+                </tr>
+              ))}
+
+            </tbody>
+          </table>
+        ) : (
+          <DataNotFound />
+        )}
+
+      </div>
+    )
+  }
+
+  const tabs = [
+    {
+      key: "application",
+      label: "Application Level",
+      icon: <AppWindowIcon className="h-4 w-4" />,
+      content: renderFlagList(data as Flag[], "application"),
+    },
+    {
+      key: "ui",
+      label: "UI Level",
+      icon: <LayoutIcon className="h-4 w-4" />,
+      content: renderFlagList(data as Flag[], "ui"),
+    },
+    {
+      key: "feature",
+      label: "Feature Level",
+      icon: <FlagIcon className="h-4 w-4" />,
+      content: renderFlagList(data as Flag[], "feature"),
+    },
+  ];
+
+
+
+  const handleToggle = async (name: string, checked: boolean) => {
+    try {
+      await updateFeatureFlagStatus({ name, is_enabled: checked }).unwrap();
+      // alert(`Feature flag ${name} is now ${checked ? "enabled" : "disabled"}`);
+    } catch (err) {
+      console.error("Failed to update feature flag status", err);
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    console.log(id)
+    if (confirm("Are you sure you want to delete this feature flag?")) {
+      alert("deleted"); // Replace with actual delete mutation later
+    }
+  };
+
+  return (
+
+    <div className="bg-gray-50 dark:bg-gray-900 space-y-2">
+
+
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-lg font-bold text-gray-800 dark:text-white">Feature Flags</h1>
+        <div className="flex items-center gap-2">
+          <Button className="w-full" size="xs" startIcon={<PlusIcon />} onClick={() => setIsModalOpen(true)}>Add New</Button>
+        </div>
+
+      </div>
+
+      <div className={`w-full bg-white border border-gray-200 rounded-lg`}>
+        {/* Tab headers */}
+        <div className="border-b border-gray-200 dark:border-gray-700 mb-4">
+          <ul className="flex flex-wrap gap-2">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.key;
+              return (
+                <li key={tab.key}>
+                  <button
+                    onClick={() => handleTabClick(tab.key)}
+                    className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-t-lg transition-all duration-200 ${isActive
+                      ? "bg-white dark:bg-gray-900 text-blue-600 border-b-2 border-blue-500 dark:text-blue-400"
+                      : "text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800"
+                      }`}
+                  >
+                    {tab.icon && <span>{tab.icon}</span>}
+                    {tab.label}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        {/* Tab content */}
+        <div className="p-4">
+          {tabs.find((tab) => tab.key === activeTab)?.content}
+        </div>
+      </div>
+
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <div className="p-4">
+          <h2 className="text-lg font-bold mb-4">Add New Feature Flag</h2>
+
+          {/* add fields like name type key */}
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300 mb-2">Feature Flag Name <FieldRequiredAsterisk /></label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              placeholder="Enter feature flag name"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300 mb-2">Description</label>
+            <textarea
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              placeholder="Enter feature flag description"
+            ></textarea>
+            <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+              Optional: Provide a brief description of the feature flag.
+            </p>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300 mb-2">Feature Flag Key <FieldRequiredAsterisk /></label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              placeholder="Enter feature flag key"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300 mb-2">Feature Flag Type <FieldRequiredAsterisk /></label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            >
+              <option value="application">Application Level</option>
+              <option value="ui">UI Level</option>
+              <option value="feature">Feature Level</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 dark:text-gray-300 mb-2">Status <FieldRequiredAsterisk /></label>
+            <select
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            >
+              <option value="enabled">Enabled</option>
+              <option value="disabled">Disabled</option>
+            </select>
+          </div>
+
+          <div className="flex justify-end mt-4 space-x-2">
+            <button
+              className="px-4 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+              onClick={() => setIsModalOpen(false)}
+            >
+              Cancel
+            </button>
+
+            <button
+              className="px-4 py-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm"
+              onClick={() => { }}
+            >
+              Save
+            </button>
+          </div>
+
+        </div>
+
+      </Modal>
+    </div>
+  );
+};
+
+export default FeatureFlags;

@@ -11,9 +11,10 @@ import {
   ListIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
-import { ActivityIcon, BellIcon, CloudIcon, CpuIcon, DatabaseIcon, Flag, GitBranchIcon, HelpCircleIcon, LineChartIcon, PlugIcon, ServerIcon, SettingsIcon, UserIcon } from "lucide-react";
+import { ActivityIcon, BellIcon, CloudIcon, CpuIcon, DatabaseIcon, Flag, GitBranchIcon, Globe, HelpCircleIcon, LineChartIcon, PlugIcon, ServerIcon, SettingsIcon, UserIcon } from "lucide-react";
 // import { useAuth } from "@/hooks/useAuth";
 import { useFeatureFlags } from "@/hooks/useFeatureFlags";
+import { useAuth } from "@/hooks/useAuth";
 
 type NavItem = {
   name: string;
@@ -45,6 +46,19 @@ const navItems: NavItem[] = [
       { name: "Endpoint Availability", path: "/synthetic-monitoring/", pro: false, featureKey: "nav_item_synthetic_endpoint" },
     ],
   },
+   {
+    name: "Applications & Services",
+    icon: <Globe />,
+    roles: ["admin", "sub-admin", "manager", "user"],
+    featureKey: "applications_services",
+    subItems: [
+      { name: "Entities", path: "/dashboard/applications-services/entities", pro: false, featureKey: "nav_item_applications_entities" },
+      { name: "SSL Certificate Monitoring", path: "/dashboard/applications-services/ssl-monitoring", pro: false, featureKey: "nav_item_applications_ssl" },
+      { name: "Page Link Crawler", path: "/dashboard/applications-services/page-link-crawler", pro: false, featureKey: "nav_item_applications_crawler" },
+      { name: "Page Load Performance", path: "/dashboard/applications-services/page-load-performance", pro: false, featureKey: "nav_item_applications_pageload" },
+      { name: "Endpoint Availability", path: "/dashboard/applications-services/endpoint-availability", pro: false, featureKey: "nav_item_applications_endpoint" },
+    ],
+  },
   {
     icon: <ServerIcon />,
     name: "Infrastructures",
@@ -69,8 +83,8 @@ const navItems: NavItem[] = [
   {
     icon: <Flag />,
     name: "Feature Flags",
-    path: "/dashboard/feature-flags",
-    roles: ["admin", "sub-admin"],
+    path: "/admin/feature-flags",
+    roles: ["admin"],
     featureKey: "nav_item_feature_flags",
   },
   {
@@ -151,13 +165,14 @@ const AppSidebar: React.FC = () => {
   const pathname = usePathname();
 
   const { isFeatureEnabled } = useFeatureFlags();
+  const { user } = useAuth();
 
   const renderMenuItems = (
     navItems: NavItem[],
     menuType: "main" | "others"
   ) => (
     <ul className="flex flex-col gap-4">
-      {navItems.filter((nav) => !nav.roles || nav.roles.includes("user")).map((nav, index) => {
+      {navItems.filter((nav) => !nav.roles || nav.roles.includes(user?.role ? user?.role : "user")).map((nav, index) => {
 
         // Skip item if flag is off
         if (nav.featureKey && !isFeatureEnabled(nav.featureKey)) return null;
