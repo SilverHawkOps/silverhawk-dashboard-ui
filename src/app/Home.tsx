@@ -218,7 +218,7 @@ export default function HomePage() {
                             <Link href="/signup" className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-5 py-2 rounded-md font-medium hover:scale-105 transition">
                                 Get Started
                             </Link>
-                            <button onClick={() => setDemoModalOpen(true)} className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white px-5 py-2 rounded-md font-medium hover:scale-105 transition">
+                            <button onClick={() => setDemoModalOpen(true)} className="bg-transparent border border-white text-white px-5 py-2 rounded-md font-medium hover:scale-105 transition">
                                 See Demo
                             </button>
                         </div>

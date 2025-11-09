@@ -36,6 +36,8 @@ export interface LoginResponse {
   data: {
     user: User;
     token: string;
+    mfaRequired: boolean;
+    tempToken?: string;
   };
 }
 
@@ -282,3 +284,14 @@ export interface GetSSLMonitorsResponse {
   }
 }
 
+export interface VerifyMfaLoginRequest {
+  code: string;
+  tempToken: string;
+}
+
+export interface VerifyMfaLoginResponse {
+  data: {
+    token: string;
+    user: Record<string, unknown>;
+  };
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import AutoRefresh from '@/components/auto-refresh/AutoRefresh';
-import { useGetInfraMetricsQuery } from '@/services/api';
+import { useGetInfraMetricsQuery } from '@/services/infraApi';
 import React from 'react';
 import CPUChart from './CPU';
 import MemoryChart from './MemoryChart';

@@ -46,14 +46,14 @@ const navItems: NavItem[] = [
       { name: "Endpoint Availability", path: "/synthetic-monitoring/", pro: false, featureKey: "nav_item_synthetic_endpoint" },
     ],
   },
-   {
+  {
     name: "Applications & Services",
     icon: <Globe />,
     roles: ["admin", "sub-admin", "manager", "user"],
     featureKey: "applications_services",
     subItems: [
       { name: "Entities", path: "/dashboard/applications-services/entities", pro: false, featureKey: "nav_item_applications_entities" },
-      { name: "SSL Certificate Monitoring", path: "/dashboard/applications-services/ssl-monitoring", pro: false, featureKey: "nav_item_applications_ssl" },
+      { name: "Error Groups", path: "/dashboard/applications-services/error-groups", pro: false, featureKey: "nav_item_applications_error_groups" },
       { name: "Page Link Crawler", path: "/dashboard/applications-services/page-link-crawler", pro: false, featureKey: "nav_item_applications_crawler" },
       { name: "Page Load Performance", path: "/dashboard/applications-services/page-load-performance", pro: false, featureKey: "nav_item_applications_pageload" },
       { name: "Endpoint Availability", path: "/dashboard/applications-services/endpoint-availability", pro: false, featureKey: "nav_item_applications_endpoint" },
@@ -149,6 +149,20 @@ const navItems: NavItem[] = [
     path: "/settings",
     roles: ["admin", "sub-admin"],
     featureKey: "nav_item_configuration",
+  },
+  {
+    name: "Account Settings",
+    icon: <Globe />,
+    roles: ["admin", "sub-admin", "manager", "user"],
+    featureKey: "applications_services",
+    subItems: [
+      { name: "Account Details", path: "/dashboard/account-settings/details", pro: false, featureKey: "nav_item_applications_entities" },
+      { name: "Security", path: "/dashboard/account-settings/security", pro: false, featureKey: "nav_item_applications_error_groups" },
+      { name: "Session History", path: "/dashboard/account-settings/session-history", pro: false, featureKey: "nav_item_applications_pageload" },
+      { name: "Notifications", path: "/dashboard/account-settings/notifications", pro: false, featureKey: "nav_item_applications_crawler" },
+      { name: "Email Addresses", path: "/dashboard/account-settings/email-addresses", pro: false, featureKey: "nav_item_applications_pageload" },
+      { name: "Close Account", path: "/dashboard/account-settings/close-account", pro: false, featureKey: "nav_item_applications_pageload" },
+    ],
   },
   {
     icon: <HelpCircleIcon />,

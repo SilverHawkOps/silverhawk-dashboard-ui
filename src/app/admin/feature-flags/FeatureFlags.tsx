@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { AppWindowIcon, Edit, FlagIcon, LayoutIcon, PlusIcon, Trash } from "lucide-react";
 import Button from "@/components/ui/button/Button";
 import Link from "next/link";
-import { useGetFeatureFlagsQuery, useUpdateFeatureFlagStatusMutation } from "@/services/api";
+import { useGetFeatureFlagsQuery, useUpdateFeatureFlagStatusMutation } from "@/services/featureFlagsApi";
 import Switch from "@/components/form/switch/Switch";
 import DataNotFound from "@/components/data-not-found/DataNotFound";
 import { Flag } from "@/services/types";

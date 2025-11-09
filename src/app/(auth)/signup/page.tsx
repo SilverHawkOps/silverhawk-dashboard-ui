@@ -38,6 +38,9 @@ export const metadata: Metadata = {
       "Access your SilverHawk APM dashboard and stay on top of system performance and application monitoring.",
     images: [ "https://yourdomain.com/images/og-signin.png" ],
   },
+  alternates: {
+    canonical: "/signup",
+  }
 };
 
 export default function SignUp() {

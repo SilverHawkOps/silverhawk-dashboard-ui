@@ -1,30 +1,28 @@
 "use client";
 import React, { useState } from "react";
+import AccountSettingsCard from "./AccountSecrutiy";
 
 
 const AccountSettings = () => {
 
-     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const handleDeleteAccount = () => {
-    // Here you would call your API to delete the account
-    alert("Account deletion initiated!");
-    setShowDeleteConfirm(false);
-  };
+    const handleDeleteAccount = () => {
+        // Here you would call your API to delete the account
+        alert("Account deletion initiated!");
+        setShowDeleteConfirm(false);
+    };
 
     return (
         <main className="">
-            <ProfileSection />
-            <SecuritySection />
-            <NotificationsSection />
-            <IntegrationsSection />
+            <AccountSettingsCard />
 
 
             <div className="border border-red-300 p-6 rounded-lg shadow-md mt-10">
                 <h3 className="text-xl font-bold text-red-700 dark:text-red-400 mb-4">
                     Danger Zone
                 </h3>
-                <p className="mb-4">
+                <p className="mb-4 text-black dark:text-gray-300">
                     Deleting your account is permanent. All your data will be lost, and
                     this action cannot be undone.
                 </p>
@@ -64,6 +62,12 @@ const AccountSettings = () => {
                     </div>
                 )}
             </div>
+
+
+            <ProfileSection />
+            <SecuritySection />
+            <NotificationsSection />
+            <IntegrationsSection />
         </main>
     );
 };

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { ClipboardCopyIcon, CheckCircleIcon } from "lucide-react";
 import Button from "@/components/ui/button/Button";
-import { useAddInfraMutation } from "@/services/api";
+import { useAddInfraMutation } from "@/services/infraApi";
 import { AddInfraRequest } from "@/services/types";
 import { useRouter } from "next/navigation";
 

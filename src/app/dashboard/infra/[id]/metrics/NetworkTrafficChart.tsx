@@ -3,7 +3,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
-
+import { InfoIcon } from "lucide-react";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 
@@ -15,6 +15,51 @@ interface NetworkTrafficChartProps {
     tx_bytes: number;
   }[];
 }
+
+// function detectAnomaly(dataPoints) {
+//   if (dataPoints.length < 3) {
+//     return {
+//       isAnomaly: false,
+//       message: "Not enough data to detect anomalies.",
+//     };
+//   }
+
+//   const history = dataPoints.slice(0, -1);
+//   const latest = dataPoints[dataPoints.length - 1];
+
+//   const mean = history.reduce((a, b) => a + b, 0) / history.length;
+//   const variance = history.reduce((a, b) => a + (b - mean) ** 2, 0) / history.length;
+//   const stdDev = Math.sqrt(variance);
+//   const zScore = (latest - mean) / stdDev;
+
+//   const isAnomaly = Math.abs(zScore) > 3;
+
+//   // 🧠 Smart reactive message
+//   let message;
+//   if (isAnomaly) {
+//     if (latest > mean) {
+//       message = `⚠️ High latency detected! Current response time (${latest}ms) is significantly above the average (${mean.toFixed(1)}ms).`;
+//     } else {
+//       message = `⚠️ Unusually low latency detected (${latest}ms). Possible sampling or reporting anomaly.`;
+//     }
+//   } else {
+//     if (latest > mean * 1.2) {
+//       message = `📈 Slight increase in response time (${latest}ms) compared to average (${mean.toFixed(1)}ms). Keep monitoring.`;
+//     } else if (latest < mean * 0.8) {
+//       message = `📉 Slight decrease in response time (${latest}ms). System seems to be responding faster than usual.`;
+//     } else {
+//       message = `✅ Response time is normal (${latest}ms, mean ${mean.toFixed(1)}ms).`;
+//     }
+//   }
+
+//   return {
+//     isAnomaly,
+//     zScore: Number(zScore.toFixed(2)),
+//     mean: Number(mean.toFixed(2)),
+//     stdDev: Number(stdDev.toFixed(2)),
+//     message,
+//   };
+// }
 
 const NetworkTrafficChart: React.FC<NetworkTrafficChartProps> = ({ data }) => {
 
@@ -67,7 +112,7 @@ const NetworkTrafficChart: React.FC<NetworkTrafficChartProps> = ({ data }) => {
     legend: {
       position: "bottom",
       horizontalAlign: "center",
-      markers: {  },
+      markers: {},
     },
     responsive: [
       {
@@ -83,10 +128,17 @@ const NetworkTrafficChart: React.FC<NetworkTrafficChartProps> = ({ data }) => {
 
   return (
     <div className="p-4 bg-white dark:bg-gray-900 rounded-2xl shadow-md">
-      <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-100 mb-2">
-        Network Traffic
-      </h2>
-      <span>Since 30 min</span>
+      <div className="flex justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-100 mb-2">
+            Network Traffic
+          </h2>
+          <span>Since 30 min</span>
+        </div>
+        <div>
+          <InfoIcon />
+        </div>
+      </div>
       <Chart options={options} series={series} type="line" height={300} />
     </div>
   )

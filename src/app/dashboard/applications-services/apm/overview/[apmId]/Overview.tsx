@@ -12,6 +12,7 @@ import {
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { ApexOptions } from "apexcharts";
+import Select from "@/components/form/Select";
 
 
 // Dynamically import ApexCharts to avoid SSR issues
@@ -300,7 +301,7 @@ const Overview: React.FC = () => {
   ];
 
 
-  const responseChart: {series: {name: string; data: number[]}[], options: ApexOptions} = {
+  const responseChart: { series: { name: string; data: number[] }[], options: ApexOptions } = {
     series: [{ name: "Response Time", data: chartData.responseTime.map((d) => d.y) }],
     options: {
       chart: {
@@ -372,7 +373,7 @@ const Overview: React.FC = () => {
     },
   };
 
-  const errorChart: {series: {name: string; data: number[]}[], options: ApexOptions} = {
+  const errorChart: { series: { name: string; data: number[] }[], options: ApexOptions } = {
     series: [{ name: "Errors", data: chartData.errorRate.map((d) => d.y) }],
     options: {
       chart: {
@@ -447,7 +448,7 @@ const Overview: React.FC = () => {
   return (
     <div className=" text-neutral-900">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 border-b pb-4">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">
             Application Performance
@@ -470,40 +471,58 @@ const Overview: React.FC = () => {
         </div>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        {metrics.map((m, i) => (
-          <motion.div
-            key={i}
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 250, damping: 15 }}
-            className={`relative overflow-hidden border border-neutral-200 rounded-2xl p-5 bg-white/80 shadow-sm backdrop-blur-sm hover:shadow-md transition-shadow duration-200`}
-          >
-            <div
-              className={`absolute inset-0 bg-gradient-to-br ${m.bg} pointer-events-none`}
-            ></div>
 
-            <div className="relative flex items-start justify-between">
-              <div>
-                <p className="text-sm text-neutral-500">{m.title}</p>
-                <h3 className="text-2xl font-semibold mt-1">{m.value}</h3>
-                <p
-                  className={`text-xs mt-1 ${m.change.startsWith("-")
-                    ? "text-red-600"
-                    : "text-emerald-600"
-                    }`}
-                >
-                  {m.change} vs last 10 min
-                </p>
+      <div className="border p-2 w-fit max-w-lg mb-4">
+        <Select options={[
+          {
+            label: "24H",
+            value: "24"
+          }
+        ]}
+          onChange={(value) => console.log(value)}
+          className="w-fit max-w-lg"
+          defaultValue="24"
+        >
+
+        </Select>
+      </div>
+
+
+      <div className="grid grid-cols-1 sm:grid-cols-12 gap-6">
+        <div className="col-span-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-6 mb-10">
+          {metrics.map((m, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 250, damping: 15 }}
+              className={`relative overflow-hidden border border-neutral-200 rounded-md p-5`}
+            >
+
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <p className="text-[1rem] text-neutral-500 truncate">{m.title}</p>
+                  <h3 className="text-3xl font-semibold mt-1">{m.value}</h3>
+                </div>
               </div>
-              <div
-                className={`p-3 rounded-xl bg-white/60 shadow-sm ${m.color}`}
-              >
-                <m.icon className="h-5 w-5" />
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="col-span-8" >
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 mb-10">
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              className="rounded-md border border-neutral-200 bg-white/80 p-6"
+            >
+              <h4 className="font-medium text-neutral-700 mb-4">
+                Response Time (ms)
+              </h4>
+              <div className="">
+                <Chart options={responseChart.options} series={responseChart.series} type="area" height={200} />
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          </div>
+        </div>
       </div>
 
       {/* Chart Section */}

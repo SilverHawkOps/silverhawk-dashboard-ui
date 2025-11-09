@@ -3,7 +3,7 @@ import React from "react";
 import { TrashIcon, PlayIcon, PauseIcon, PlusIcon, BarChart3Icon, CpuIcon } from "lucide-react";
 import Button from "@/components/ui/button/Button";
 import Link from "next/link";
-import { useGetInfraListQuery } from "@/services/api";
+import { useGetInfraListQuery } from "@/services/infraApi";
 import MaskedApiKey from "@/components/mask-api-key/MaskApiKey";
 import DataNotFound from "@/components/data-not-found/DataNotFound";
 

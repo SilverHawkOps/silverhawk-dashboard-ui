@@ -6,7 +6,7 @@ import React, { useState } from 'react'
 import MonitorTable from './MonitorTable'
 import { Modal } from '@/components/ui/modal'
 import SSLMonitorForm from './SSLMonitorForm';
-import { useGetSSLMonitorsQuery } from '@/services/api';
+import { useGetSSLMonitorsQuery } from '@/services/sslApi';
 
 
 const SSLMonitoring = () => {

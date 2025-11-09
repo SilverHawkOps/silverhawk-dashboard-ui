@@ -4,21 +4,25 @@ import { Metadata } from 'next';
 import { Providers } from './Providers';
 import Script from 'next/script';
 
-const outfit = Outfit( {
-  subsets: [ "latin" ],
-} );
+const outfit = Outfit({
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://silverhawk.com"), // 👈 base for canonical URLs
   title:
     "SilverHawk – Advanced Application Performance Monitoring",
   description: "Monitor, optimize, and scale your applications with SilverHawk. Gain real-time insights into system performance, track metrics, detect anomalies, and ensure smooth application operations with our robust APM solution.",
+  alternates: {
+    canonical: "/", // 👈 canonical path for this layout (homepage)
+  },
 };
 
-export default function RootLayout( {
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}> ) {
+}>) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -42,9 +46,9 @@ export default function RootLayout( {
       <Script id='jsonldschema'
         type="application/ld+json"
         strategy="afterInteractive"
-        dangerouslySetInnerHTML={ { __html: JSON.stringify( jsonLd ) } }
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      {/* ✅ Google Analytics Script */ }
+      {/* ✅ Google Analytics Script */}
       <Script
         async
         src="https://www.googletagmanager.com/gtag/js?id=G-L4RLZVTN7Q" // <-- replace with your G-code
@@ -52,15 +56,15 @@ export default function RootLayout( {
       />
 
       <Script id="google-analytics" strategy="afterInteractive">
-        { `
+        {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', 'G-L4RLZVTN7Q');
           `}
       </Script>
-      <body className={ `${outfit.className} dark:bg-gray-900` }>
-        <Providers>{ children }</Providers>
+      <body className={`${outfit.className} dark:bg-gray-900`}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

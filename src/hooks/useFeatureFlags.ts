@@ -1,4 +1,4 @@
-import { useGetApplicationFeatureFlagsQuery } from "@/services/api";
+import { useGetApplicationFeatureFlagsQuery } from "@/services/featureFlagsApi";
 import { useMemo } from "react";
 
 export function useFeatureFlags() {

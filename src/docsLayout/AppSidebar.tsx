@@ -144,6 +144,16 @@ export const navItems = [
     path: "/docs/cli",
   },
   {
+    name: "Account Management",
+    icon: <Network className="w-4 h-4" />,
+    subItems: [
+      {
+        name: "Multi-Factor Authentication",
+        path: "/docs/account-settings/multi-factor-authentication/",
+      },
+    ],
+  },
+  {
     name: "Change Log",
     icon: <History className="w-4 h-4" />,
     path: "/docs/changelog",

@@ -16,7 +16,7 @@ const Stat = ({ number, label }: { number: string; label: string }) => {
 
 const HeroSection = () => {
   return (
-    <section className="relative flex flex-col items-center justify-center text-center min-h-[85vh] px-6 overflow-hidden bg-gradient-to-b from-[#0a0f14] via-[#0f1620] to-[#0a0f14]">
+    <section className="relative flex flex-col items-center justify-center text-center h-[100vh] px-6 overflow-hidden bg-gradient-to-b from-[#0a0f14] via-[#0f1620] to-[#0a0f14]">
       {/* Background gradient glow */ }
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(59,130,246,0.1),transparent_60%)]" />
 

@@ -1,5 +1,5 @@
 "use client";
-import { useGetPageLoadPerformanceByUrlMutation } from "@/services/api";
+import { useGetPageLoadPerformanceByUrlMutation } from "@/services/pagePerformanceApi";
 import React, { useState } from "react";
 
 interface Audit {
